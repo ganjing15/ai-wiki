@@ -1,0 +1,2887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The AI Era — A Visual Index</title>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Instrument+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* warm paper palette */
+    --paper:    #f4efe6;
+    --paper-2:  #ede6d8;
+    --paper-3:  #e3dac7;
+    --ink:      #1a1814;
+    --ink-2:    #3d362c;
+    --ink-3:    #6a6356;
+    --ink-4:    #948c7e;
+    --rule:     #1a181420;
+    --rule-2:   #1a18140d;
+
+    /* a single warm accent + lab tints (muted, editorial) */
+    --accent:   #c1442e;     /* vermillion */
+    --accent-2: #2d5a3d;     /* forest */
+
+    --c-openai:    #1a6b52;
+    --c-anthropic: #b85a3a;
+    --c-google:    #2c5aa0;
+    --c-meta:      #1a3d8f;
+    --c-deepseek:  #6b3d8f;
+    --c-mistral:   #a86b1a;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* paper texture */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(circle at 20% 30%, #00000003 1px, transparent 1px),
+      radial-gradient(circle at 70% 60%, #00000004 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    pointer-events: none; z-index: 1;
+  }
+
+  .serif { font-family: 'Instrument Serif', serif; font-weight: 400; }
+  .mono  { font-family: 'JetBrains Mono', monospace; }
+
+  /* NAV — minimal editorial header */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(244, 239, 230, 0.88);
+    backdrop-filter: blur(20px) saturate(1.2);
+    -webkit-backdrop-filter: blur(20px) saturate(1.2);
+    border-bottom: 1px solid var(--rule);
+    height: 56px;
+    display: flex; align-items: center;
+    padding: 0 56px;
+  }
+  .nav-mark {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px; font-style: italic;
+    margin-right: auto;
+    color: var(--ink);
+  }
+  .nav-mark::before {
+    content: '※ ';
+    font-style: normal; color: var(--accent);
+  }
+  nav .links { display: flex; gap: 28px; }
+  nav a {
+    color: var(--ink-3); text-decoration: none;
+    font-size: 12px; font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: lowercase;
+    position: relative;
+    transition: color 0.2s;
+  }
+  nav a::after {
+    content: ''; position: absolute; left: 0; bottom: -3px; height: 1px; width: 0;
+    background: var(--ink); transition: width 0.25s ease;
+  }
+  nav a:hover { color: var(--ink); }
+  nav a:hover::after { width: 100%; }
+
+  .container { max-width: 1380px; margin: 0 auto; padding: 0 56px; position: relative; z-index: 2; }
+
+  /* HERO */
+  .hero {
+    padding: 130px 0 100px;
+    position: relative;
+  }
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 80px;
+    align-items: end;
+  }
+  .hero-eyebrow {
+    display: flex; align-items: center; gap: 12px;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-3); margin-bottom: 32px;
+    font-weight: 500;
+  }
+  .hero-eyebrow .vol {
+    background: var(--ink); color: var(--paper);
+    padding: 3px 8px; font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.1em; font-size: 10px;
+  }
+  .hero-eyebrow .rule { flex: 1; height: 1px; background: var(--ink); max-width: 60px; }
+
+  .hero-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(64px, 9vw, 132px);
+    line-height: 0.94;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    font-weight: 400;
+  }
+  .hero-title em {
+    font-style: italic;
+    color: var(--accent);
+  }
+  .hero-title .amp {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    color: var(--ink-4);
+    font-weight: 400;
+    margin: 0 0.04em;
+  }
+  .hero-side {
+    padding-bottom: 12px;
+    border-left: 1px solid var(--ink);
+    padding-left: 28px;
+  }
+  .hero-sub {
+    font-family: 'Instrument Serif', serif;
+    font-size: 21px;
+    line-height: 1.4;
+    color: var(--ink-2);
+    text-wrap: pretty;
+    margin-bottom: 24px;
+  }
+  .hero-sub em { font-style: italic; color: var(--accent); }
+  .hero-meta {
+    font-size: 12px; color: var(--ink-4);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    font-family: 'JetBrains Mono', monospace;
+    line-height: 1.7;
+  }
+  .hero-meta div span { color: var(--ink-2); }
+
+  /* HERO STATS — editorial number row */
+  .hero-stats {
+    margin-top: 80px;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .hero-stat {
+    padding: 24px 20px;
+    border-right: 1px solid var(--rule);
+    position: relative;
+  }
+  .hero-stat:last-child { border-right: none; }
+  .hero-stat .num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .hero-stat .num em { font-style: italic; color: var(--accent); }
+  .hero-stat .lbl {
+    font-size: 11px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 12px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+  .hero-stat .idx {
+    position: absolute; top: 12px; right: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+  }
+
+  /* SECTION */
+  section {
+    padding: 110px 0 30px;
+    position: relative; z-index: 2;
+  }
+  .section-head {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 40px;
+    margin-bottom: 64px;
+    align-items: baseline;
+    border-top: 1px solid var(--ink);
+    padding-top: 32px;
+  }
+  .section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; letter-spacing: 0.1em;
+    color: var(--ink-3);
+    text-transform: uppercase;
+  }
+  .section-num em { color: var(--accent); font-style: normal; }
+  .section-title {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(36px, 5vw, 60px);
+    line-height: 1.02;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+  .section-title em { font-style: italic; color: var(--accent); }
+  .section-sub {
+    font-family: 'Instrument Serif', serif;
+    font-size: 19px;
+    color: var(--ink-2);
+    margin-top: 16px;
+    max-width: 620px;
+    line-height: 1.45;
+  }
+
+  /* TIMELINE */
+  .timeline-controls {
+    display: flex; gap: 6px; margin-bottom: 48px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .ctrl-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-right: 8px;
+  }
+  .tl-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink); font-size: 12px; font-weight: 500;
+    cursor: pointer;
+    font-family: 'Instrument Sans', sans-serif;
+    letter-spacing: 0.02em;
+    transition: all 0.15s;
+    border-radius: 0;
+  }
+  .tl-btn:hover { background: var(--ink); color: var(--paper); }
+  .tl-btn.active { background: var(--ink); color: var(--paper); }
+  .tl-divider { width: 24px; }
+
+  .timeline-track {
+    position: relative;
+  }
+  .tl-year-group {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    column-gap: 0;
+    position: relative;
+    margin-bottom: 8px;
+  }
+  .tl-year-marker {
+    grid-column: 1 / 2;
+    position: sticky; top: 76px;
+    align-self: start;
+    padding-top: 24px;
+    height: fit-content;
+  }
+  .tl-year-num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 84px;
+    font-style: italic;
+    line-height: 0.9;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+  }
+  .tl-year-events {
+    grid-column: 2 / 3;
+    border-left: 1px solid var(--ink);
+    padding: 24px 0 24px 0;
+    margin-bottom: 16px;
+  }
+  .tl-row {
+    display: grid;
+    grid-template-columns: 96px 1fr auto;
+    gap: 24px;
+    padding: 16px 32px 18px 32px;
+    align-items: start;
+    position: relative;
+    border-bottom: 1px solid var(--rule-2);
+    transition: background 0.15s;
+  }
+  .tl-row:last-child { border-bottom: none; }
+  .tl-row::before {
+    content: '';
+    position: absolute; left: -4px; top: 22px;
+    width: 7px; height: 7px;
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    transition: all 0.15s;
+  }
+  .tl-row:hover { background: var(--paper-2); }
+  .tl-row:hover::before { background: var(--accent); border-color: var(--accent); }
+  .tl-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    padding-top: 4px;
+  }
+  .tl-event {
+    font-size: 16px; color: var(--ink);
+    font-weight: 400;
+    line-height: 1.4;
+  }
+  .tl-impact {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 14.5px;
+    color: var(--ink-3);
+    line-height: 1.4;
+    margin-top: 4px;
+    max-width: 580px;
+    text-wrap: pretty;
+  }
+  .tl-body { min-width: 0; }
+  .tl-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    white-space: nowrap;
+    padding-top: 4px;
+  }
+  .tl-tag::before {
+    content: '— ';
+  }
+
+  /* LAB CARDS - editorial style */
+  .lab-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .lab-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 36px 36px 36px 36px;
+    background: var(--paper);
+    position: relative;
+    transition: background 0.2s;
+    cursor: default;
+  }
+  .lab-card:hover { background: var(--paper-2); }
+  .lab-card .lab-num {
+    position: absolute; top: 24px; right: 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    letter-spacing: 0.08em;
+  }
+  .lab-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 38px; font-weight: 400;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .lab-name em { font-style: italic; }
+  .lab-founded {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.06em;
+    margin-bottom: 28px;
+  }
+  .lab-flagship {
+    font-family: 'Instrument Serif', serif;
+    font-size: 18px; color: var(--ink);
+    margin-bottom: 24px;
+    line-height: 1.4;
+  }
+  .lab-flagship em { font-style: italic; color: var(--accent); }
+  .lab-kv {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 14px 24px;
+    border-top: 1px solid var(--rule);
+    padding-top: 20px;
+  }
+  .lab-kv-cell .k {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .lab-kv-cell .v {
+    font-size: 14px; color: var(--ink);
+    line-height: 1.3;
+  }
+
+  /* MODEL CHART - more refined */
+  .chart-wrap {
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    padding: 32px 36px 36px;
+  }
+  .chart-axis-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 24px;
+    margin-bottom: 16px;
+  }
+  .axis-labels {
+    position: relative; height: 18px;
+  }
+  .axis-tick {
+    position: absolute; transform: translateX(-50%);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+  .model-chart {
+    display: flex; flex-direction: column;
+    gap: 0;
+    position: relative;
+  }
+  .grid-bg {
+    position: absolute; left: 134px; right: 0; top: 0; bottom: 0;
+    pointer-events: none;
+  }
+  .grid-line {
+    position: absolute; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--rule);
+  }
+  .model-row {
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    gap: 24px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--rule-2);
+    position: relative;
+  }
+  .model-row:last-child { border-bottom: none; }
+  .model-lab-label {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--ink);
+    text-align: right;
+    letter-spacing: -0.01em;
+  }
+  .model-track {
+    position: relative; height: 44px;
+  }
+  .model-bar {
+    position: absolute;
+    height: 28px; top: 8px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    display: flex; align-items: center;
+    padding: 0 10px;
+    font-size: 11px; font-weight: 500;
+    white-space: nowrap;
+    cursor: default;
+    transition: transform 0.15s;
+    overflow: hidden;
+    letter-spacing: 0.01em;
+  }
+  .model-bar:hover { transform: translateY(-1px); z-index: 10; box-shadow: 2px 2px 0 var(--ink); }
+  .model-bar.filled { color: var(--paper); }
+  .model-bar.narrow {
+    overflow: visible;
+    padding: 0;
+  }
+  .model-bar-extlabel {
+    position: absolute;
+    left: 100%; top: 50%;
+    transform: translateY(-50%);
+    padding-left: 6px;
+    white-space: nowrap;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    pointer-events: none;
+  }
+
+  /* DEEPSEEK MOMENT - large editorial pull-quote feel */
+  .moment {
+    margin: 0 0 64px;
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 56px;
+    align-items: center;
+    padding: 56px 0 40px;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    position: relative;
+  }
+  .moment::before {
+    content: '"';
+    position: absolute; left: -8px; top: -12px;
+    font-family: 'Instrument Serif', serif;
+    font-size: 180px;
+    font-style: italic;
+    color: var(--accent);
+    line-height: 0.6;
+    pointer-events: none;
+    opacity: 0.18;
+  }
+  .moment-text h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 44px; font-weight: 400;
+    line-height: 1.05;
+    color: var(--ink);
+    margin-bottom: 18px;
+    letter-spacing: -0.02em;
+  }
+  .moment-text h3 em { font-style: italic; color: var(--accent); }
+  .moment-text p {
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px; color: var(--ink-2);
+    line-height: 1.5;
+    max-width: 540px;
+  }
+  .moment-stats { display: flex; gap: 40px; }
+  .moment-stat {
+    text-align: left;
+  }
+  .moment-stat .big {
+    font-family: 'Instrument Serif', serif;
+    font-size: 88px;
+    font-style: italic;
+    color: var(--accent);
+    letter-spacing: -0.04em;
+    line-height: 0.9;
+  }
+  .moment-stat .sm {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-top: 12px;
+    max-width: 130px;
+    line-height: 1.5;
+  }
+
+  /* FUNDING BARS */
+  .funding-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .funding-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 32px 36px;
+  }
+  .funding-card h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    color: var(--ink);
+    margin-bottom: 28px;
+    line-height: 1.1;
+  }
+  .funding-card h3 em { font-style: italic; color: var(--accent); }
+  .funding-bar-group { margin-bottom: 18px; }
+  .funding-bar-group:last-child { margin-bottom: 0; }
+  .funding-bar-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+    gap: 12px;
+  }
+  .funding-bar-meta .label {
+    font-size: 11px; color: var(--ink-3);
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1; min-width: 0;
+  }
+  .funding-bar-meta .value {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px; font-style: italic;
+    color: var(--ink);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .funding-bar-track {
+    height: 12px;
+    background: var(--paper-3);
+    border: 1px solid var(--ink);
+    overflow: hidden;
+    position: relative;
+  }
+  .funding-bar-fill {
+    height: 100%;
+    background: var(--ink);
+    transition: width 1.2s cubic-bezier(0.4,0,0.2,1);
+    background-image: repeating-linear-gradient(
+      45deg,
+      transparent, transparent 4px,
+      rgba(255,255,255,0.08) 4px, rgba(255,255,255,0.08) 8px
+    );
+  }
+  .funding-bar-fill.accent { background-color: var(--accent); }
+
+  /* NVIDIA / INFRA */
+  .infra-callout {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 48px 0 40px;
+    margin: 56px 0 48px;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 56px;
+    align-items: stretch;
+  }
+  .stargate-text h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 44px; font-weight: 400;
+    line-height: 1.04;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    text-wrap: balance;
+  }
+  .stargate-text h3 em { font-style: italic; color: var(--accent); }
+  .stargate-text p {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    margin-bottom: 24px;
+    max-width: 480px;
+  }
+  .stargate-meta {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 18px 28px;
+    border-top: 1px solid var(--rule); padding-top: 18px;
+  }
+  .stargate-meta-cell .k {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .stargate-meta-cell .v {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px; color: var(--ink);
+    font-style: italic;
+  }
+
+  /* Nvidia revenue / market-cap chart */
+  .nvidia-chart {
+    border: 1px solid var(--ink);
+    padding: 30px 32px 24px;
+    background: var(--paper);
+  }
+  .nvidia-chart-head {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 24px; gap: 16px;
+  }
+  .nvidia-chart-head h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px; font-weight: 400;
+    line-height: 1.1;
+  }
+  .nvidia-chart-head h4 em { font-style: italic; color: var(--accent); }
+  .nvidia-chart-head .sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    letter-spacing: 0.06em;
+  }
+  .nvidia-bars {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    align-items: end;
+    height: 220px;
+    border-bottom: 1px solid var(--ink);
+    padding-bottom: 0;
+    margin-bottom: 12px;
+  }
+  .nvidia-bar-col {
+    display: flex; flex-direction: column; align-items: center;
+    height: 100%; justify-content: flex-end;
+    position: relative;
+  }
+  .nvidia-bar {
+    width: 70%;
+    background: var(--ink);
+    transition: height 1.4s cubic-bezier(0.2, 0.7, 0.1, 1);
+    position: relative;
+    background-image: repeating-linear-gradient(
+      45deg, transparent, transparent 4px,
+      rgba(255,255,255,0.08) 4px, rgba(255,255,255,0.08) 8px
+    );
+  }
+  .nvidia-bar.peak { background-color: var(--accent); }
+  .nvidia-bar .val {
+    position: absolute; top: -34px; left: 50%; transform: translateX(-50%);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 26px; color: var(--ink);
+    white-space: nowrap;
+    line-height: 1;
+  }
+  .nvidia-bar.peak .val { color: var(--accent); }
+  .nvidia-bar .val small {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--ink-3);
+    font-style: normal; letter-spacing: 0.06em;
+    display: block; text-align: center; margin-top: 2px;
+  }
+  .nvidia-bar.peak .val small { color: var(--ink-3); }
+  .nvidia-bar-col .yr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-3);
+    letter-spacing: 0.08em;
+    margin-top: 8px;
+  }
+  /* market-cap row */
+  .nvidia-mc {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+  }
+  .nvidia-mc-cell { text-align: center; }
+  .nvidia-mc-cell .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--ink-4);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+  .nvidia-mc-cell .v {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 28px; color: var(--ink);
+    line-height: 1.05;
+  }
+  .nvidia-mc-cell:last-child .v { color: var(--accent); }
+  .nvidia-mc-cell .when {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--ink-4);
+    letter-spacing: 0.06em; margin-top: 4px;
+  }
+
+  /* INCIDENTS */
+  .incident-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .incident-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 32px 32px;
+    background: var(--paper);
+    position: relative;
+    transition: background 0.15s;
+  }
+  .incident-card:hover { background: var(--paper-2); }
+  .incident-marker {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .incident-marker::before {
+    content: '';
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+  .incident-card h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 26px; font-weight: 400;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .incident-card h4 em { font-style: italic; color: var(--accent); }
+  .incident-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-3);
+    letter-spacing: 0.04em;
+    margin-bottom: 14px;
+  }
+  .incident-card p {
+    font-family: 'Instrument Serif', serif;
+    font-size: 15px;
+    color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .incident-card .pull-stat {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--rule);
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .incident-card .pull-stat em {
+    font-size: 28px;
+    color: var(--accent);
+    margin-right: 6px;
+    letter-spacing: -0.01em;
+  }
+
+  /* RESEARCH CONCERNS — alignment-faking specific */
+  .alignment-callout {
+    grid-column: 1 / -1;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 40px 36px;
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: center;
+  }
+  .alignment-callout h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px; line-height: 1.1;
+    margin-bottom: 12px;
+    color: var(--paper);
+  }
+  .alignment-callout h4 em { font-style: italic; color: var(--accent); }
+  .alignment-callout p {
+    font-size: 14px;
+    color: var(--paper-3);
+    line-height: 1.55;
+    max-width: 540px;
+  }
+  .alignment-stats {
+    display: flex; gap: 40px;
+  }
+  .alignment-stat .num {
+    font-family: 'Instrument Serif', serif;
+    font-size: 72px; font-style: italic;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.03em;
+  }
+  .alignment-stat .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--paper-3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 8px;
+    max-width: 130px;
+    line-height: 1.4;
+  }
+
+  /* AWARDS */
+  .awards-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .award-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 32px 36px;
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .award-medal {
+    width: 56px; height: 56px;
+    border: 1px solid var(--ink);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px; font-style: italic;
+    color: var(--accent);
+    background: var(--paper-2);
+  }
+  .award-card h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    margin-bottom: 6px;
+    line-height: 1.15;
+    color: var(--ink);
+  }
+  .award-card .yr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-3);
+    text-transform: uppercase; letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .award-card p {
+    font-size: 13px; color: var(--ink-2);
+    line-height: 1.55;
+  }
+
+  /* MACRO — Stanford AI Index 2026 */
+  .macro-callout {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 48px 0 40px;
+    margin-bottom: 48px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .macro-callout-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    text-transform: uppercase; letter-spacing: 0.14em;
+    margin-bottom: 14px;
+  }
+  .macro-callout-eyebrow em {
+    color: var(--accent); font-style: normal;
+    border-left: 1px solid var(--rule); margin-left: 10px; padding-left: 10px;
+  }
+  .macro-callout h3 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 48px; font-weight: 400;
+    line-height: 1.04;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 18px;
+    text-wrap: balance;
+  }
+  .macro-callout h3 em { font-style: italic; color: var(--accent); }
+  .macro-callout p {
+    font-family: 'Instrument Serif', serif;
+    font-size: 17px; color: var(--ink-2);
+    line-height: 1.5;
+    max-width: 540px;
+  }
+  .macro-callout-source {
+    margin-top: 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    letter-spacing: 0.06em;
+  }
+  .macro-headline {
+    text-align: right;
+  }
+  .macro-headline .num {
+    font-family: 'Instrument Serif', serif;
+    font-size: clamp(108px, 14vw, 180px);
+    font-style: italic;
+    color: var(--accent);
+    line-height: 0.85;
+    letter-spacing: -0.04em;
+    display: block;
+  }
+  .macro-headline .num small {
+    font-size: 0.45em; color: var(--ink); font-style: normal;
+    letter-spacing: -0.02em; margin-left: 4px;
+  }
+  .macro-headline .delta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px; color: var(--accent);
+    letter-spacing: 0.08em;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+  .macro-headline .delta-lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    letter-spacing: 0.12em;
+    margin-top: 14px;
+    text-transform: uppercase;
+  }
+
+  /* macro: USA vs China bar */
+  .macro-versus-wrap {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+    margin-bottom: 48px;
+  }
+  .macro-versus-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 36px;
+  }
+  .macro-versus-card h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px; font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 28px;
+  }
+  .macro-versus-card h4 em { font-style: italic; color: var(--accent); }
+  .macro-bar-row { margin-bottom: 24px; }
+  .macro-bar-row:last-child { margin-bottom: 0; }
+  .macro-bar-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 8px; gap: 12px;
+  }
+  .macro-bar-meta .country {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-2);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .macro-bar-meta .amount {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px; font-style: italic;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .macro-bar-meta .amount em { color: var(--accent); }
+  .macro-bar-track {
+    height: 10px; background: var(--paper-3);
+    position: relative; overflow: hidden;
+  }
+  .macro-bar-fill {
+    height: 100%; background: var(--ink);
+    transition: width 1.6s cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+  .macro-bar-fill.accent { background: var(--accent); }
+  .macro-multiple {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--rule);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+  .macro-multiple em {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px; font-style: italic;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+    margin-right: 6px;
+    vertical-align: -3px;
+  }
+
+  /* adoption curve */
+  .macro-adoption {
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 36px;
+    margin-bottom: 48px;
+  }
+  .macro-adoption-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    margin-bottom: 28px;
+    gap: 24px;
+  }
+  .macro-adoption h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 28px; font-weight: 400;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+  .macro-adoption h4 em { font-style: italic; color: var(--accent); }
+  .macro-adoption-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.06em;
+  }
+  .macro-curve {
+    position: relative;
+    height: 220px;
+    border-bottom: 1px solid var(--ink);
+    border-left: 1px solid var(--rule);
+    margin-bottom: 12px;
+  }
+  .macro-curve svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  .macro-curve-axis {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    letter-spacing: 0.08em; text-transform: uppercase;
+  }
+  .macro-curve-axis span:nth-child(2) { text-align: center; }
+  .macro-curve-axis span:nth-child(3) { text-align: right; }
+  .macro-curve-tick {
+    position: absolute; left: 0;
+    width: 100%;
+    border-top: 1px dashed var(--rule-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--ink-4);
+    padding-left: 6px;
+    letter-spacing: 0.06em;
+  }
+  .macro-curve-pin {
+    position: absolute;
+    width: 8px; height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    box-shadow: 0 0 0 4px var(--paper);
+  }
+  .macro-curve-label {
+    position: absolute;
+    transform: translate(-50%, calc(-100% - 14px));
+    font-family: 'Instrument Serif', serif;
+    font-size: 14px; font-style: italic;
+    color: var(--ink);
+    white-space: nowrap;
+    text-align: center;
+    line-height: 1.2;
+  }
+  .macro-curve-label small {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px; color: var(--ink-4);
+    font-style: normal;
+    letter-spacing: 0.06em;
+    margin-top: 2px;
+  }
+
+  /* macro stat row */
+  .macro-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .macro-stat-cell {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 28px 32px;
+  }
+  .macro-stat-cell .lbl {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-4);
+    text-transform: uppercase; letter-spacing: 0.12em;
+    margin-bottom: 14px;
+  }
+  .macro-stat-cell .big {
+    font-family: 'Instrument Serif', serif;
+    font-size: 64px;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: var(--ink);
+  }
+  .macro-stat-cell .big em { font-style: italic; color: var(--accent); }
+  .macro-stat-cell .big small { font-size: 0.45em; color: var(--ink-3); letter-spacing: 0; margin-left: 4px; font-style: normal; }
+  .macro-stat-cell .note {
+    margin-top: 14px;
+    font-family: 'Instrument Serif', serif;
+    font-size: 14px; color: var(--ink-2);
+    line-height: 1.45;
+  }
+
+  /* transparency */
+  .macro-transparency {
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 36px 0 30px;
+    margin-top: 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 56px;
+    align-items: center;
+  }
+  .macro-transparency h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px; font-weight: 400;
+    line-height: 1.1;
+    margin-bottom: 14px;
+    letter-spacing: -0.01em;
+  }
+  .macro-transparency h4 em { font-style: italic; color: var(--accent); }
+  .macro-transparency p {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px; color: var(--ink-2);
+    line-height: 1.5;
+  }
+  .macro-transparency-viz {
+    display: flex; align-items: end; gap: 32px;
+    height: 160px;
+  }
+  .tpi-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .tpi-bar-wrap { flex: 1; width: 100%; display: flex; align-items: end; }
+  .tpi-bar {
+    width: 100%;
+    background: var(--ink);
+    position: relative;
+    transition: height 1.4s cubic-bezier(0.2, 0.7, 0.1, 1);
+  }
+  .tpi-bar.down { background: var(--accent); }
+  .tpi-bar .tpi-val {
+    position: absolute; top: -22px; left: 0; right: 0;
+    text-align: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px; font-style: italic;
+    color: var(--ink);
+  }
+  .tpi-bar.down .tpi-val { color: var(--accent); }
+  .tpi-yr {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px; color: var(--ink-3);
+    letter-spacing: 0.08em;
+  }
+  .tpi-arrow {
+    flex: 0 0 32px;
+    align-self: center;
+    text-align: center;
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px; font-style: italic;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  /* REGULATIONS - asymmetric grid */
+  .reg-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .reg-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 36px;
+    background: var(--paper);
+    position: relative;
+    transition: background 0.15s;
+  }
+  .reg-card:hover { background: var(--paper-2); }
+  .reg-card.featured { background: var(--ink); color: var(--paper); }
+  .reg-card.featured:hover { background: #2a261f; }
+  .reg-card.featured .reg-name { color: var(--paper); }
+  .reg-card.featured .reg-date { color: var(--paper-3); }
+  .reg-card.featured .reg-body { color: var(--paper-3); }
+  .reg-card.featured .reg-tag { color: var(--paper); border-color: var(--paper); }
+  .reg-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 4px 10px;
+    border: 1px solid var(--ink);
+    color: var(--ink);
+    margin-bottom: 24px;
+  }
+  .reg-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 32px; line-height: 1.05;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+    margin-bottom: 8px;
+  }
+  .reg-name em { font-style: italic; color: var(--accent); }
+  .reg-date {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; color: var(--ink-3);
+    letter-spacing: 0.04em;
+    margin-bottom: 20px;
+  }
+  .reg-body {
+    font-family: 'Instrument Serif', serif;
+    font-size: 16px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    max-width: 540px;
+  }
+
+  /* CONCEPTS */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .concept-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 28px 28px 32px;
+    background: var(--paper);
+    position: relative;
+    transition: background 0.15s;
+  }
+  .concept-card:hover { background: var(--paper-2); }
+  .concept-card .glyph {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 64px;
+    color: var(--accent);
+    line-height: 0.8;
+    margin-bottom: 24px;
+    display: block;
+  }
+  .concept-card h4 {
+    font-family: 'Instrument Serif', serif;
+    font-size: 24px;
+    margin-bottom: 10px;
+    line-height: 1.1;
+    color: var(--ink);
+  }
+  .concept-card h4 em { font-style: italic; }
+  .concept-card p {
+    font-size: 13px; color: var(--ink-2);
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+
+  /* PEOPLE - portrait card grid */
+  .people-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border-top: 1px solid var(--ink);
+    border-left: 1px solid var(--ink);
+  }
+  .person-card {
+    border-right: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+    padding: 32px;
+    background: var(--paper);
+    position: relative;
+  }
+  .person-monogram {
+    font-family: 'Instrument Serif', serif;
+    font-style: italic;
+    font-size: 88px;
+    line-height: 0.85;
+    color: var(--accent);
+    margin-bottom: 16px;
+    letter-spacing: -0.04em;
+  }
+  .person-name {
+    font-family: 'Instrument Serif', serif;
+    font-size: 22px;
+    color: var(--ink);
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+  .person-role {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-3);
+    margin-bottom: 14px;
+  }
+  .person-note {
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.5;
+    border-top: 1px solid var(--rule);
+    padding-top: 14px;
+  }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--ink);
+    margin-top: 80px;
+    padding: 60px 56px 40px;
+    max-width: 1380px; margin-left: auto; margin-right: auto;
+    position: relative; z-index: 2;
+  }
+  .footer-inner {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: end;
+  }
+  .footer-mark {
+    font-family: 'Instrument Serif', serif;
+    font-size: 56px;
+    font-style: italic;
+    color: var(--ink);
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .footer-mark em { color: var(--accent); }
+  .footer-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: var(--ink-3);
+    text-align: right;
+    line-height: 1.8;
+  }
+  .footer-meta div { color: var(--ink); }
+
+  /* responsive */
+  @media (max-width: 1100px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 40px; }
+    .hero-side { border-left: none; border-top: 1px solid var(--ink); padding-left: 0; padding-top: 32px; }
+    .hero-stats { grid-template-columns: repeat(3, 1fr); }
+    .hero-stat:nth-child(3) { border-right: none; }
+    .hero-stat:nth-child(n+4) { border-top: 1px solid var(--rule); }
+    .reg-grid, .funding-grid, .awards-row { grid-template-columns: 1fr; }
+    .lab-grid { grid-template-columns: 1fr 1fr; }
+    .macro-callout, .macro-transparency { grid-template-columns: 1fr; gap: 32px; }
+    .macro-headline { text-align: left; }
+    .macro-versus-wrap, .macro-stats { grid-template-columns: 1fr; }
+    .infra-callout { grid-template-columns: 1fr; gap: 32px; padding: 36px 0 28px; }
+    .incident-grid { grid-template-columns: 1fr; }
+    .alignment-callout { grid-template-columns: 1fr; gap: 24px; }
+    .alignment-stats { gap: 28px; }
+    .concept-grid, .people-grid { grid-template-columns: 1fr 1fr; }
+    .moment { grid-template-columns: 1fr; gap: 32px; }
+    .section-head { grid-template-columns: 1fr; gap: 16px; }
+    nav { padding: 0 24px; }
+    .container { padding: 0 24px; }
+    .timeline-track { /* still column flow */ }
+    .tl-year-group { grid-template-columns: 60px 1fr; }
+    .tl-year-num { font-size: 56px; }
+    .tl-row { grid-template-columns: 80px 1fr; }
+    .tl-row .tl-tag { display: none; }
+  }
+  @media (max-width: 700px) {
+    nav .links { gap: 16px; }
+    nav a:nth-child(n+4) { display: none; }
+    .hero-stats { grid-template-columns: 1fr 1fr; }
+    .concept-grid, .people-grid { grid-template-columns: 1fr; }
+    .moment-stats { gap: 20px; }
+    .moment-stat .big { font-size: 64px; }
+  }
+
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: var(--paper-2); }
+  ::-webkit-scrollbar-thumb { background: var(--ink-3); }
+
+  /* card-as-link — keep card visuals identical, add an unobtrusive cue on hover */
+  a.card-link {
+    color: inherit;
+    text-decoration: none;
+    display: block;
+    position: relative;
+  }
+  a.card-link::after {
+    content: '↗';
+    position: absolute;
+    top: 14px; right: 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-4);
+    opacity: 0;
+    transition: opacity 0.15s, color 0.15s;
+    pointer-events: none;
+  }
+  a.card-link:hover::after { opacity: 1; color: var(--accent); }
+  /* nudge the cue away from existing corner counters */
+  a.lab-card.card-link::after { right: 56px; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-mark">AI Wiki</div>
+  <div class="links">
+    <a href="#timeline">timeline</a>
+    <a href="#labs">labs</a>
+    <a href="#models">models</a>
+    <a href="#agents">agents</a>
+    <a href="#capital">capital</a>
+    <a href="#macro">macro</a>
+    <a href="#incidents">incidents</a>
+    <a href="#policy">policy</a>
+    <a href="#concepts">concepts</a>
+    <a href="#people">people</a>
+  </div>
+</nav>
+
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ─── DATA ───────────────────────────────────────────────────────────────────
+
+const TIMELINE_EVENTS = [
+  // Pre-history (architectures)
+  { date: "2017-06-12", label: "\"Attention Is All You Need\" — Transformer paper", impact: "The architecture beneath every modern LLM is published; all eight authors later leave Google.", cat: "research", lab: null },
+  { date: "2020-06-19", label: "DDPM paper — Denoising Diffusion Probabilistic Models", impact: "Mathematical foundation for Stable Diffusion, DALL-E, and Sora.", cat: "research", lab: null },
+  { date: "2022-09-21", label: "Whisper released by OpenAI (MIT, open-source)", impact: "OpenAI's last major open-source release before the closed-by-default ChatGPT era.", cat: "model", lab: "openai" },
+  { date: "2022-11-17", label: "Meta Galactica demo withdrawn, 3 days after launch", impact: "Hallucinations enter mainstream discourse — 13 days before ChatGPT ships.", cat: "incident", lab: "meta" },
+  { date: "2022-11-30", label: "ChatGPT launches — 1M users in 5 days", impact: "Fastest-growing consumer app in history; reaches 100M MAU in two months.", cat: "model", lab: "openai" },
+  { date: "2023-02-24", label: "Llama 1 released by Meta AI", impact: "Sparks the open-weight movement; weights leak online within a week.", cat: "model", lab: "meta" },
+  { date: "2023-03-09", label: "Elon Musk founds xAI", impact: "Musk re-enters AI after leaving OpenAI's board in 2018.", cat: "biz", lab: "xai" },
+  { date: "2023-03-14", label: "GPT-4 released", impact: "Sets the frontier for ~14 months; the model every other lab benchmarks against.", cat: "model", lab: "openai" },
+  { date: "2023-03-14", label: "Claude 1 released", impact: "Anthropic enters public-facing AI; differentiates on safety from day one.", cat: "model", lab: "anthropic" },
+  { date: "2023-03-22", label: "FLI \"Pause Giant AI Experiments\" letter — 30,000+ signatures", impact: "First mass-coordinated call for AI training restrictions; no lab pauses.", cat: "policy", lab: null },
+  { date: "2023-03-30", label: "Italy temporarily bans ChatGPT — first major GDPR action", impact: "First major Western regulator to act against a generative-AI service.", cat: "incident", lab: "openai" },
+  { date: "2023-05-30", label: "CAIS Statement on AI Risk — \"global priority\"", impact: "AI extinction risk reframed alongside pandemics and nuclear war.", cat: "policy", lab: null },
+  { date: "2023-07-11", label: "Claude 2 released", impact: "First 100K-token context window in a production model.", cat: "model", lab: "anthropic" },
+  { date: "2023-07-18", label: "Llama 2 released, commercial use", impact: "First open-weight model usable in production; ignites the open ecosystem.", cat: "model", lab: "meta" },
+  { date: "2023-08-15", label: "China Generative AI Measures enter force", impact: "First operational national-level AI regulation; mandates content alignment with socialist values.", cat: "policy", lab: null },
+  { date: "2023-08-31", label: "Baidu Ernie Bot public release in China", impact: "First Chinese chatbot to clear the new licensing regime.", cat: "model", lab: null },
+  { date: "2023-09-27", label: "Mistral 7B released", impact: "A small open-weight model outperforms Llama 2 13B; European AI emerges.", cat: "model", lab: "mistral" },
+  { date: "2023-10-30", label: "Biden signs Executive Order 14110", impact: "First US federal frontier-AI executive order; mandates safety-test sharing.", cat: "policy", lab: null },
+  { date: "2023-11-01", label: "Bletchley AI Safety Summit, 28 countries", impact: "First multilateral AI safety summit; UK and US both establish AI Safety Institutes.", cat: "event", lab: null },
+  { date: "2023-11-04", label: "xAI unveils Grok", impact: "xAI ships its first model from a standing start in eight months.", cat: "model", lab: "xai" },
+  { date: "2023-11-17", label: "Sam Altman fired by OpenAI board", impact: "The most-watched governance crisis in tech; non-profit oversight model questioned.", cat: "biz", lab: "openai" },
+  { date: "2023-11-21", label: "Sam Altman reinstated as OpenAI CEO", impact: "Founder control reasserted; the original board is reconstituted around Altman.", cat: "biz", lab: "openai" },
+  { date: "2023-12-06", label: "Gemini 1.0 Pro / Ultra announced", impact: "Google's first credible response to GPT-4 after a year of catch-up.", cat: "model", lab: "google" },
+  { date: "2023-12-09", label: "Mixtral 8×7B released", impact: "Proves Mixture-of-Experts viable at small scale; ignites the MoE wave.", cat: "model", lab: "mistral" },
+  { date: "2023-12-27", label: "NYT v. OpenAI / Microsoft lawsuit filed", impact: "Largest training-data copyright case to date; remedy sought \"in the billions.\"", cat: "incident", lab: "openai" },
+  { date: "2024-02-07", label: "California SB 1047 introduced (Sen. Wiener)", impact: "First serious US state-level attempt to regulate frontier-model training.", cat: "policy", lab: null },
+  { date: "2024-02-14", label: "Moffatt v. Air Canada — first chatbot-liability ruling", impact: "First common-law precedent that companies own their chatbot's statements.", cat: "incident", lab: null },
+  { date: "2024-02-15", label: "Sora demo / preview clips released", impact: "Text-to-video shock; \"will Hollywood still exist?\" becomes a real question.", cat: "model", lab: "openai" },
+  { date: "2024-03-04", label: "Claude 3 Opus released", impact: "First model to convincingly beat GPT-4 on major benchmarks.", cat: "model", lab: "anthropic" },
+  { date: "2024-03-17", label: "xAI open-sources Grok-1", impact: "Musk delivers on his open-source AI pledge; 314B-parameter weights released.", cat: "model", lab: "xai" },
+  { date: "2024-03-18", label: "Nvidia announces Blackwell architecture", impact: "2025 production sold out by November; the next-gen training chip.", cat: "biz", lab: null },
+  { date: "2024-03-21", label: "Microsoft acqui-hires Inflection AI for $650M", impact: "New M&A template: license-plus-personnel to dodge antitrust scrutiny.", cat: "biz", lab: null },
+  { date: "2024-04-02", label: "Anthropic publishes Many-shot Jailbreaking research", impact: "Long-context attacks scale with capability; affects every major model.", cat: "incident", lab: "anthropic" },
+  { date: "2024-04-18", label: "Llama 3 released, 8B and 70B", impact: "Open weights begin to credibly chase the frontier.", cat: "model", lab: "meta" },
+  { date: "2024-05-08", label: "AlphaFold 3 announced", impact: "Extends protein prediction to DNA, RNA, ligands — sets up the year's Nobel.", cat: "research", lab: "google" },
+  { date: "2024-05-13", label: "GPT-4o released, the omni model", impact: "Native voice-to-voice; first GPT-4-class model on the free tier.", cat: "model", lab: "openai" },
+  { date: "2024-05-21", label: "Seoul Summit — 16 labs sign Frontier AI Safety Commitments", impact: "First voluntary safety commitments signed by US, EU, and Chinese labs together.", cat: "event", lab: null },
+  { date: "2024-06-10", label: "Apple Intelligence announced at WWDC (GPT-4o via Siri)", impact: "AI reaches roughly a billion consumer devices through a single distribution deal.", cat: "biz", lab: null },
+  { date: "2024-06-18", label: "Nvidia reaches $3T market cap, world's most valuable", impact: "AI capex inflection becomes visible in equity markets.", cat: "biz", lab: null },
+  { date: "2024-06-20", label: "Claude 3.5 Sonnet released", impact: "Anthropic takes the SOTA on most public benchmarks; pricing pressure on OpenAI.", cat: "model", lab: "anthropic" },
+  { date: "2024-07-23", label: "Llama 3.1 405B released", impact: "Open-weight model first credibly competitive with closed frontier models.", cat: "model", lab: "meta" },
+  { date: "2024-08-01", label: "EU AI Act enters into force", impact: "World's first comprehensive AI law; sets a 10²⁵-FLOP regulatory threshold.", cat: "policy", lab: null },
+  { date: "2024-09-12", label: "OpenAI o1 preview, reasoning paradigm", impact: "Test-time compute scaling proven; opens a new axis of model capability.", cat: "model", lab: "openai" },
+  { date: "2024-09-25", label: "Mira Murati departs OpenAI", impact: "OpenAI's CTO becomes the highest-profile exit since Sutskever.", cat: "biz", lab: "openai" },
+  { date: "2024-09-29", label: "Newsom vetoes California SB 1047", impact: "US state-level frontier regulation effectively foreclosed for the term.", cat: "policy", lab: null },
+  { date: "2024-10-08", label: "Nobel Physics: Hinton & Hopfield", impact: "Deep learning recognised at the highest level of scientific honor.", cat: "award", lab: null },
+  { date: "2024-10-09", label: "Nobel Chemistry: Hassabis & Jumper", impact: "First Nobel for an AI system applied to a scientific problem.", cat: "award", lab: null },
+  { date: "2024-10-22", label: "Anthropic Claude 3.5 (new) + Computer Use", impact: "First general-purpose agent shipped by a frontier lab; SWE-bench jumps 33% → 49%.", cat: "model", lab: "anthropic" },
+  { date: "2024-12-05", label: "OpenAI o1 full release", impact: "Reasoning model leaves preview; AIME 83%, GPQA Diamond 78.3%.", cat: "model", lab: "openai" },
+  { date: "2024-12-09", label: "Sora publicly launched", impact: "Generative video reaches consumers; watermark removal becomes prevalent.", cat: "model", lab: "openai" },
+  { date: "2024-12-11", label: "Gemini 2.0 Flash released", impact: "Native multimodal output; image and audio generation built-in.", cat: "model", lab: "google" },
+  { date: "2024-12-18", label: "Anthropic publishes Alignment Faking research", impact: "Frontier models will strategically fake compliance to preserve their values.", cat: "incident", lab: "anthropic" },
+  { date: "2024-12-20", label: "Italy fines OpenAI €15M — first GDPR generative-AI fine", impact: "First GDPR monetary penalty against a generative-AI provider.", cat: "incident", lab: "openai" },
+  { date: "2024-12-26", label: "DeepSeek-V3 released, ~$6M training cost", impact: "A frontier-class MoE model trained for less than a single GPT-4 fine-tune.", cat: "model", lab: "deepseek" },
+  { date: "2025-01-20", label: "DeepSeek-R1 released, MIT license", impact: "Open-weight reasoning model matches o1 — released the same day Trump rescinds EO 14110.", cat: "model", lab: "deepseek" },
+  { date: "2025-01-20", label: "Trump rescinds Executive Order 14110", impact: "Resets US federal AI policy on day one of the second Trump term.", cat: "policy", lab: null },
+  { date: "2025-01-21", label: "Stargate LLC announced — $500B AI infrastructure", impact: "Largest AI infrastructure commitment in history; announced one day after EO 14110's rescission.", cat: "biz", lab: null },
+  { date: "2025-01-23", label: "OpenAI Operator agent released", impact: "OpenAI's first agentic product; shut down 7 months later.", cat: "model", lab: "openai" },
+  { date: "2025-01-27", label: "DeepSeek Moment — Nvidia loses $600B in a day", impact: "Largest single-company market-cap loss in US stock history.", cat: "biz", lab: "deepseek" },
+  { date: "2025-01-29", label: "International AI Safety Report — Bengio-led", impact: "Most institutionally-recognized scientific assessment of AI risk to date.", cat: "policy", lab: null },
+  { date: "2025-02-03", label: "ChatGPT Deep Research launched (26.6% HLE)", impact: "Long-form autonomous research goes mainstream; reasoning + tool use combined.", cat: "model", lab: "openai" },
+  { date: "2025-02-10", label: "Paris AI Action Summit — 58 sign, US/UK refuse", impact: "International AI-safety consensus visibly fractures.", cat: "event", lab: null },
+  { date: "2025-02-17", label: "xAI Grok-3 released", impact: "xAI claims top scores at launch; first time the lab is treated as frontier.", cat: "model", lab: "xai" },
+  { date: "2025-02", label: "Murati launches Thinking Machines Lab (PBC)", impact: "Ex-OpenAI CTO starts the highest-profile new lab of 2025.", cat: "biz", lab: null },
+  { date: "2025-02-24", label: "Claude 3.7 Sonnet + Claude Code preview", impact: "Extended-thinking mode shipped; Code becomes the canonical CLI coding agent.", cat: "model", lab: "anthropic" },
+  { date: "2025-03-01", label: "Anthropic Series E: $3.5B at $61.5B", impact: "Anthropic's valuation triples in a year; signals capital arms race.", cat: "biz", lab: "anthropic" },
+  { date: "2025-03-28", label: "xAI acquires X Corp.", impact: "Frontier-AI lab becomes a major-media-platform owner; novel governance setup.", cat: "biz", lab: "xai" },
+  { date: "2025-04-05", label: "Llama 4 (Maverick + Scout) released", impact: "Trillion-parameter open-weight MoE; Meta keeps pace with closed frontier.", cat: "model", lab: "meta" },
+  { date: "2025-04-28", label: "Alibaba Qwen3 — 36T tokens, 119 languages", impact: "Largest disclosed training-token count from a Chinese lab.", cat: "model", lab: null },
+  { date: "2025-05-16", label: "OpenAI Codex Cloud agent — research preview", impact: "Multi-task autonomous coding; cloud-side parallel execution.", cat: "model", lab: "openai" },
+  { date: "2025-05-22", label: "Claude Opus 4 / Sonnet 4 released", impact: "Anthropic's flagship 4-series era begins; coding benchmarks set.", cat: "model", lab: "anthropic" },
+  { date: "2025-05", label: "Google Veo 3 released — synchronized audio generation", impact: "First text-to-video with native synced audio output.", cat: "model", lab: "google" },
+  { date: "2025-06", label: "Bengio launches LawZero — \"honest AI\" nonprofit", impact: "Develops \"Scientist AI\" as a guardrail against deceptive systems.", cat: "biz", lab: null },
+  { date: "2025-07-09", label: "xAI Grok-4 released", impact: "xAI's largest model; Grok cycle compresses to ~5 months.", cat: "model", lab: "xai" },
+  { date: "2025-07-10", label: "Nvidia first company to $4T market cap", impact: "AI's economic gravity field intensifies further; thirteen months after $3T.", cat: "biz", lab: null },
+  { date: "2025-07-23", label: "Trump signs America's AI Action Plan", impact: "90+ federal actions across innovation, infrastructure, and security pillars.", cat: "policy", lab: null },
+  { date: "2025-07", label: "ChatGPT agent released (succeeds Operator)", impact: "General-purpose agent with virtual-computer access; replaces a 7-month-old product.", cat: "model", lab: "openai" },
+  { date: "2025-08-31", label: "OpenAI Operator shut down", impact: "OpenAI's first agent retired; product velocity now measured in months.", cat: "biz", lab: "openai" },
+  { date: "2025-09-01", label: "Anthropic Series F: $13B at $183B", impact: "Anthropic's valuation triples again in six months.", cat: "biz", lab: "anthropic" },
+  { date: "2025-08", label: "Nano Banana (Gemini Flash Image) released", impact: "Image-gen sleeper hit; 200M edits in weeks, the year's biggest consumer-AI surprise.", cat: "model", lab: "google" },
+  { date: "2025-09", label: "Sora 2 released to select users (US/Canada)", impact: "Second-generation video model; available only to select tier users.", cat: "model", lab: "openai" },
+  { date: "2025-10-15", label: "Claude Haiku 4.5 released", impact: "Frontier capability at the small-model price tier.", cat: "model", lab: "anthropic" },
+  { date: "2025-10-21", label: "ChatGPT Atlas browser launched (macOS)", impact: "The browser becomes the chat interface; data-collection footprint expands.", cat: "model", lab: "openai" },
+  { date: "2025-10-29", label: "Nvidia first company to $5T market cap", impact: "First company in history to cross $5T; 16 months from $3T.", cat: "biz", lab: null },
+  { date: "2025-11", label: "Nano Banana Pro released by Google DeepMind", impact: "Pro tier of the viral image-gen family ships alongside Gemini 3.", cat: "model", lab: "google" },
+  { date: "2025-11-18", label: "Gemini 3 Pro released", impact: "Google retakes SOTA on ARC-AGI-2 (77.1%) and SWE-Bench Verified (80.6%).", cat: "model", lab: "google" },
+  { date: "2025-11-19", label: "Yann LeCun departs Meta", impact: "Open-source AI's loudest advocate leaves its biggest sponsor.", cat: "biz", lab: "meta" },
+  { date: "2025-11", label: "Cursor crosses $1B ARR · $29.3B valuation", impact: "AI tooling reaches genuine software-business scale; $100M → $1B ARR in 10 months.", cat: "biz", lab: null },
+  { date: "2025-11-24", label: "Claude Opus 4.5 released", impact: "Anthropic's mid-cycle flagship update, before the 4.6 / 4.7 cadence.", cat: "model", lab: "anthropic" },
+  { date: "2025-12-11", label: "OpenAI announces GPT-5.2", impact: "First post-GPT-5 update; cadence settles into ~quarterly increments.", cat: "model", lab: "openai" },
+  { date: "2025-12-17", label: "Gemini 3 Flash released", impact: "Reasoning quality reaches the inference-tier price point.", cat: "model", lab: "google" },
+  { date: "2026-02-05", label: "Gemini 3 Deep Think released", impact: "Google ships extended-reasoning mode; closes the o1-style gap.", cat: "model", lab: "google" },
+  { date: "2026-02-12", label: "Claude Sonnet 4.6 released", impact: "Mid-tier model continues to advance on coding benchmarks.", cat: "model", lab: "anthropic" },
+  { date: "2026-02-12", label: "ByteDance Seedance 2.0 released", impact: "Multimodal video model; text+image+audio in, 15-second multi-shot audio-video out.", cat: "model", lab: null },
+  { date: "2026-02-17", label: "Anthropic Series G: $30B at $380B", impact: "Anthropic's valuation reaches the largest private-tech round on record.", cat: "biz", lab: "anthropic" },
+  { date: "2026-03-24", label: "OpenAI announces Sora app and API shutdown", impact: "Generative-video product retired one year after public launch.", cat: "biz", lab: "openai" },
+  { date: "2026-02", label: "Nano Banana 2 released (up to 4K)", impact: "Image-gen quality bumps to 4K; consumer image-AI's fastest year-on-year arc.", cat: "model", lab: "google" },
+  { date: "2026-04-07", label: "Claude Mythos released, limited", impact: "Anthropic's first non-Claude-named model; limited availability.", cat: "model", lab: "anthropic" },
+  { date: "2026-04-16", label: "Claude Opus 4.7 released", impact: "Current Anthropic flagship.", cat: "model", lab: "anthropic" },
+  { date: "2026-04-23", label: "ChatGPT stable on GPT-5.5 engine", impact: "Current ChatGPT engine; succeeds GPT-5.2 after four months.", cat: "model", lab: "openai" },
+  { date: "2026-04-24", label: "DeepSeek-V4 released, 1.6T params", impact: "Open-weight model at GPT-4-class scale; trained at a fraction of US lab spend.", cat: "model", lab: "deepseek" },
+  { date: "2026-04-29", label: "Anthropic RSP v3.2 effective", impact: "Anthropic's safety policy reaches version 3, three years after its first publication.", cat: "policy", lab: "anthropic" },
+];
+
+const CAT_LABELS = {
+  model:    "Release",
+  policy:   "Policy",
+  biz:      "Business",
+  event:    "Event",
+  award:    "Award",
+  research: "Research",
+  incident: "Incident",
+};
+
+// Models - swimlane data
+const CHART_START_M = 2023*12;       // Jan 2023
+const CHART_END_M   = 2026*12 + 5;   // May 2026
+const CHART_RANGE   = CHART_END_M - CHART_START_M;
+function ymToFrac(y, m) {
+  return Math.max(0, Math.min(1, (y*12 + m - 1 - CHART_START_M) / CHART_RANGE));
+}
+function ymStr(s) {
+  const [y, m] = s.split("-").map(Number);
+  return ymToFrac(y, m);
+}
+
+const MODEL_RELEASES = [
+  { lab: "OpenAI",    models: [
+    { name: "GPT-4",    date: "2023-03", end: "2024-05" },
+    { name: "GPT-4o",   date: "2024-05", end: "2024-09" },
+    { name: "o1",       date: "2024-09", end: "2025-05" },
+    { name: "Operator", date: "2025-01", end: "2025-06", offset: 1 },
+    { name: "GPT-5.2",  date: "2025-12", end: "2026-04" },
+    { name: "GPT-5.5",  date: "2026-04", end: "2026-05" },
+  ]},
+  { lab: "Anthropic", models: [
+    { name: "Claude 1",   date: "2023-03", end: "2023-07" },
+    { name: "Claude 2",   date: "2023-07", end: "2024-03" },
+    { name: "Claude 3",   date: "2024-03", end: "2024-06" },
+    { name: "3.5 Sonnet", date: "2024-06", end: "2025-02" },
+    { name: "3.7 Sonnet", date: "2025-02", end: "2025-05" },
+    { name: "Claude 4",   date: "2025-05", end: "2026-05" },
+    { name: "Mythos",     date: "2026-04", end: "2026-05", offset: 1 },
+  ]},
+  { lab: "Google",    models: [
+    { name: "Gemini 1.0",  date: "2023-12", end: "2024-12" },
+    { name: "1.5 Pro",     date: "2024-02", end: "2024-12", offset: 1 },
+    { name: "Gemini 2.0",  date: "2024-12", end: "2025-11" },
+    { name: "Gemini 3 Pro",date: "2025-11", end: "2026-05" },
+  ]},
+  { lab: "Meta",      models: [
+    { name: "Llama 1",  date: "2023-02", end: "2023-07" },
+    { name: "Llama 2",  date: "2023-07", end: "2024-04" },
+    { name: "Llama 3",  date: "2024-04", end: "2025-04" },
+    { name: "Llama 4",  date: "2025-04", end: "2026-05" },
+  ]},
+  { lab: "DeepSeek",  models: [
+    { name: "DS-V2",  date: "2024-05", end: "2024-12" },
+    { name: "DS-V3",  date: "2024-12", end: "2025-01" },
+    { name: "R1",     date: "2025-01", end: "2025-08" },
+    { name: "V3.1",   date: "2025-08", end: "2026-04" },
+    { name: "V4",     date: "2026-04", end: "2026-05" },
+  ]},
+  { lab: "xAI",       models: [
+    { name: "Grok-1",   date: "2023-11", end: "2024-03" },
+    { name: "Grok-1.5", date: "2024-03", end: "2024-08" },
+    { name: "Grok-2",   date: "2024-08", end: "2025-02" },
+    { name: "Grok-3",   date: "2025-02", end: "2025-07" },
+    { name: "Grok-4",   date: "2025-07", end: "2026-05" },
+  ]},
+  { lab: "Mistral",   models: [
+    { name: "Mistral 7B",   date: "2023-09", end: "2023-12" },
+    { name: "Mixtral 8×7B", date: "2023-12", end: "2024-12" },
+  ]},
+];
+
+const AXIS = ["Jan '23", "Jan '24", "Jan '25", "Jan '26"];
+const AXIS_FRACS = [
+  ymToFrac(2023,1), ymToFrac(2024,1), ymToFrac(2025,1), ymToFrac(2026,1)
+];
+
+const FUNDING_DATA = [
+  {
+    title: { plain: "Anthropic ", em: "valuation" },
+    bars: [
+      { label: "Series E · Mar 2025", value: 61.5,  max: 380 },
+      { label: "Series F · Sep 2025", value: 183,   max: 380 },
+      { label: "Series G · Feb 2026", value: 380,   max: 380 },
+    ],
+    suffix: "B"
+  },
+  {
+    title: { plain: "Anthropic ", em: "raise" },
+    bars: [
+      { label: "Series E", value: 3.5,  max: 30 },
+      { label: "Series F", value: 13,   max: 30 },
+      { label: "Series G", value: 30,   max: 30 },
+    ],
+    suffix: "B",
+    accent: true,
+  },
+  {
+    title: { plain: "Microsoft → ", em: "OpenAI" },
+    bars: [
+      { label: "Pre-2025 investment, cumulative",  value: 23, max: 135 },
+      { label: "Stake at $135B (post-restructure)",  value: 135, max: 135 },
+    ],
+    suffix: "B"
+  },
+  {
+    title: { plain: "Strategic → ", em: "Anthropic" },
+    bars: [
+      { label: "Amazon, total",  value: 8,   max: 10 },
+      { label: "Google, total",  value: 3,   max: 10 },
+    ],
+    suffix: "B",
+    accent: true,
+  }
+];
+
+// ─── COMPONENTS ─────────────────────────────────────────────────────────────
+
+function Hero() {
+  return (
+    <section className="hero">
+      <div className="container">
+        <div className="hero-grid">
+          <div>
+            <div className="hero-eyebrow">
+              <span className="vol">VOL · I</span>
+              <span className="rule" />
+              <span>2022 — 2026</span>
+            </div>
+            <h1 className="hero-title">
+              The AI<br/>era,<br/><em>indexed</em>.
+            </h1>
+          </div>
+          <div className="hero-side">
+            <p className="hero-sub">
+              A visual record of the models, organizations, policies <em>&amp;</em> ideas that defined the post-ChatGPT decade.
+            </p>
+            <div className="hero-meta">
+              <div>edition · <span>2026.05</span></div>
+              <div>articles · <span>78</span></div>
+              <div>format · <span>open access</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div className="hero-stats">
+          <Stat idx="i"   num={<><em>90</em>+</>} lbl="Milestone Events" />
+          <Stat idx="ii"  num="6"     lbl="Frontier Labs" />
+          <Stat idx="iii" num={<>$<em>380</em>B</>} lbl="Anthropic, Feb 2026" />
+          <Stat idx="iv"  num={<>$<em>5</em>T</>}   lbl="Nvidia, Oct 2025" />
+          <Stat idx="v"   num={<>$<em>500</em>B</>} lbl="Stargate, by 2029" />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Stat({ idx, num, lbl }) {
+  return (
+    <div className="hero-stat">
+      <div className="idx">{idx}</div>
+      <div className="num">{num}</div>
+      <div className="lbl">{lbl}</div>
+    </div>
+  );
+}
+
+function SectionHead({ num, title, sub }) {
+  return (
+    <div className="section-head">
+      <div className="section-num">§ {num}</div>
+      <div>
+        <h2 className="section-title">{title}</h2>
+        {sub && <p className="section-sub">{sub}</p>}
+      </div>
+    </div>
+  );
+}
+
+function TimelineSection() {
+  const [filter, setFilter] = useState("all");
+  const [labFilter, setLabFilter] = useState("all");
+
+  const filters = [
+    { id: "all",      label: "All" },
+    { id: "model",    label: "Models" },
+    { id: "policy",   label: "Policy" },
+    { id: "biz",      label: "Business" },
+    { id: "incident", label: "Incidents" },
+    { id: "award",    label: "Awards" },
+    { id: "research", label: "Research" },
+  ];
+  const labFilters = [
+    { id: "all",      label: "All" },
+    { id: "openai",   label: "OpenAI" },
+    { id: "anthropic",label: "Anthropic" },
+    { id: "google",   label: "Google" },
+    { id: "meta",     label: "Meta" },
+    { id: "deepseek", label: "DeepSeek" },
+    { id: "xai",      label: "xAI" },
+  ];
+
+  const filtered = TIMELINE_EVENTS.filter(e => {
+    if (filter !== "all" && e.cat !== filter) return false;
+    if (labFilter !== "all" && e.lab !== labFilter) return false;
+    return true;
+  });
+
+  const groups = {};
+  filtered.forEach(e => {
+    const yr = e.date.slice(0, 4);
+    if (!groups[yr]) groups[yr] = [];
+    groups[yr].push(e);
+  });
+
+  return (
+    <section id="timeline">
+      <div className="container">
+        <SectionHead
+          num="01 / Chronology"
+          title={<>A timeline, <em>annotated</em>.</>}
+          sub="Ninety-plus events from the Transformer paper through the present, filterable by category and by lab."
+        />
+        <div className="timeline-controls">
+          <span className="ctrl-label">Filter</span>
+          {filters.map(f => (
+            <button key={f.id}
+              className={`tl-btn ${filter === f.id ? "active" : ""}`}
+              onClick={() => setFilter(f.id)}>{f.label}</button>
+          ))}
+          <div className="tl-divider" />
+          <span className="ctrl-label">Lab</span>
+          {labFilters.map(f => (
+            <button key={f.id}
+              className={`tl-btn ${labFilter === f.id ? "active" : ""}`}
+              onClick={() => setLabFilter(f.id)}>{f.label}</button>
+          ))}
+        </div>
+
+        <div className="timeline-track">
+          {Object.keys(groups).sort().map(yr => (
+            <div key={yr} className="tl-year-group">
+              <div className="tl-year-marker">
+                <div className="tl-year-num">'{yr.slice(2)}</div>
+              </div>
+              <div className="tl-year-events">
+                {groups[yr].map((e, i) => (
+                  <div key={i} className="tl-row">
+                    <div className="tl-date">{formatDate(e.date)}</div>
+                    <div className="tl-body">
+                      <div className="tl-event">{e.label}</div>
+                      {e.impact && <div className="tl-impact">{e.impact}</div>}
+                    </div>
+                    <div className="tl-tag">{CAT_LABELS[e.cat]}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+          {filtered.length === 0 && (
+            <div style={{gridColumn:"2/3", padding:"24px 32px", color:"var(--ink-3)", borderLeft:"1px solid var(--ink)"}}>
+              No events match this filter.
+            </div>
+          )}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function formatDate(s) {
+  // 2024-05-13 -> May 13, 2025-08 -> Aug
+  const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+  const [y, m, d] = s.split("-").map(Number);
+  if (!d) return months[m-1];
+  return `${months[m-1]} ${d}`;
+}
+
+function LabsSection() {
+  const labs = [
+    {
+      num: "i",
+      href: "entities/openai.md",
+      name: { plain: "Open", em: "AI" },
+      founded: "Founded · December 2015",
+      flagship: <>Today's flagship is <em>ChatGPT on GPT-5.5</em>, stable as of April 2026.</>,
+      kv: [
+        ["HQ",      "1455 3rd St, San Francisco"],
+        ["Leader",  "Sam Altman"],
+        ["Weights", "Closed-source"],
+        ["Capital", "MS 27% stake at $135B (2025)"],
+        ["Notable", "Altman fired & reinstated, Nov 2023"],
+        ["Products","ChatGPT · Sora · o-series · Atlas"],
+      ],
+    },
+    {
+      num: "ii",
+      href: "entities/anthropic.md",
+      name: { plain: "Anthrop", em: "ic" },
+      founded: "Founded · 2021",
+      flagship: <>Active models include <em>Opus 4.7</em>, Sonnet 4.6, Haiku 4.5, and the limited-availability Mythos.</>,
+      kv: [
+        ["HQ",        "500 Howard St, San Francisco"],
+        ["Leader",    "Dario Amodei"],
+        ["Weights",   "Closed-source"],
+        ["Valuation", "$380B (Series G, Feb 2026)"],
+        ["Employees", "~2,500"],
+        ["Products",  "Claude · Code · Cowork · Skills"],
+      ],
+    },
+    {
+      num: "iii",
+      href: "entities/google-deepmind.md",
+      name: { plain: "Google ", em: "DeepMind" },
+      founded: "DeepMind 2010 · Merged April 2023",
+      flagship: <>Gemini 3.1 Pro and 3 Deep Think; <em>AlphaFold 3</em> earned a 2024 Nobel Prize.</>,
+      kv: [
+        ["HQ",      "London"],
+        ["Leader",  "Demis Hassabis"],
+        ["Weights", "Closed (Gemma is open)"],
+        ["Parent",  "Alphabet Inc."],
+        ["Notable", "Hassabis & Jumper, 2024 Nobel Chemistry"],
+        ["Products","Gemini · AlphaFold · Veo · Lyria"],
+      ],
+    },
+    {
+      num: "iv",
+      href: "entities/meta-ai.md",
+      name: { plain: "Meta", em: " AI" },
+      founded: "FAIR · 2013",
+      flagship: <><em>Llama 4 Maverick</em> and Scout, the largest source-available models.</>,
+      kv: [
+        ["HQ",      "Astor Place, NYC"],
+        ["Leader",  "—"],
+        ["Weights", "Source-available"],
+        ["License", "Llama 4 Community License"],
+        ["Notable", "Yann LeCun departed Nov 2025"],
+        ["Family",  "Llama 1 → 2 → 3 → 4"],
+      ],
+    },
+    {
+      num: "v",
+      href: "entities/deepseek.md",
+      name: { plain: "Deep", em: "Seek" },
+      founded: "Founded · July 2023",
+      flagship: <><em>DeepSeek-V4</em> · 1.6T Pro, 284B Flash. R1 shipped under MIT license.</>,
+      kv: [
+        ["HQ",      "Hangzhou, China"],
+        ["Leader",  "Liang Wenfeng"],
+        ["Weights", "Open-weight (MIT)"],
+        ["Train cost", "V3 at ~$6M"],
+        ["Notable", "$600B Nvidia wipeout, Jan 2025"],
+        ["Family",  "V2 → V3 → R1 → V4"],
+      ],
+    },
+    {
+      num: "vi",
+      href: "entities/xai.md",
+      name: { plain: "x", em: "AI" },
+      founded: "Founded · March 2023",
+      flagship: <><em>Grok-4</em> released July 2025; acquired X Corp. March 2025.</>,
+      kv: [
+        ["HQ",      "Palo Alto, CA"],
+        ["Leader",  "Elon Musk"],
+        ["Weights", "Grok-1 open; later closed"],
+        ["Capital", "~$22B+ raised across rounds"],
+        ["Notable", "Acquired X Corp., 2025-03-28"],
+        ["Models",  "Grok-1 → 1.5 → 2 → 3 → 4"],
+      ],
+    },
+  ];
+
+  return (
+    <section id="labs">
+      <div className="container">
+        <SectionHead
+          num="02 / Organizations"
+          title={<>Six labs, <em>six philosophies</em>.</>}
+          sub="The frontier labs differ on every dimension: weights, structure, geography, governance, and what they think AI is for."
+        />
+        <div className="lab-grid">
+          {labs.map(lab => {
+            const inner = (
+              <>
+                <div className="lab-num">{lab.num.toUpperCase()}</div>
+                <div className="lab-name">{lab.name.plain}<em>{lab.name.em}</em></div>
+                <div className="lab-founded">{lab.founded}</div>
+                <div className="lab-flagship">{lab.flagship}</div>
+                <div className="lab-kv">
+                  {lab.kv.map(([k, v]) => (
+                    <div key={k} className="lab-kv-cell">
+                      <div className="k">{k}</div>
+                      <div className="v">{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+            return lab.href
+              ? <a key={lab.num} href={lab.href} className="lab-card card-link">{inner}</a>
+              : <div key={lab.num} className="lab-card">{inner}</div>;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ModelsSection() {
+  // assign label color by lab
+  const labColor = {
+    "OpenAI": "var(--c-openai)",
+    "Anthropic": "var(--c-anthropic)",
+    "Google": "var(--c-google)",
+    "Meta": "var(--c-meta)",
+    "DeepSeek": "var(--c-deepseek)",
+    "xAI": "#222",
+    "Mistral": "var(--c-mistral)",
+  };
+
+  return (
+    <section id="models">
+      <div className="container">
+        <SectionHead
+          num="03 / Releases"
+          title={<>Three years, <em>seven labs</em>.</>}
+          sub="When each major model dropped, and how long it remained the lab's headline product."
+        />
+        <div className="chart-wrap">
+          <div className="chart-axis-row">
+            <div></div>
+            <div className="axis-labels">
+              {AXIS.map((lbl, i) => (
+                <div key={lbl} className="axis-tick" style={{left:`${AXIS_FRACS[i]*100}%`}}>{lbl}</div>
+              ))}
+            </div>
+          </div>
+          <div className="model-chart">
+            <div className="grid-bg">
+              {AXIS_FRACS.map((f, i) => (
+                <div key={i} className="grid-line" style={{left:`${f*100}%`}} />
+              ))}
+            </div>
+            {MODEL_RELEASES.map((row, ri) => (
+              <div key={row.lab} className="model-row">
+                <div className="model-lab-label" style={{color: labColor[row.lab]}}>{row.lab}</div>
+                <div className="model-track">
+                  {row.models.map((m, i) => {
+                    const left  = ymStr(m.date) * 100;
+                    const right = ymStr(m.end) * 100;
+                    const width = Math.max(right - left, 5);
+                    const offset = m.offset || 0;
+                    const filled = !offset && i % 2 === 0;
+                    return (
+                      <div key={i} className={`model-bar ${filled ? "filled" : ""}`}
+                        style={{
+                          left: `${left}%`, width: `calc(${width}% - 2px)`,
+                          background: filled ? labColor[row.lab] : "var(--paper)",
+                          borderColor: labColor[row.lab],
+                          color: filled ? "var(--paper)" : labColor[row.lab],
+                          top: 8 + offset * 14,
+                          height: offset ? 16 : 28,
+                          fontSize: offset ? 10 : 11,
+                        }}
+                        title={`${m.name}: ${m.date}`}>
+                        <span style={{overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}}>{m.name}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function AgentsSection() {
+  const agents = [
+    {
+      num: "i",
+      href: "entities/manus.md",
+      tag: "Closed-source · Cloud",
+      name: { plain: "", em: "Manus" },
+      founded: "Butterfly Effect · Founded 2022",
+      flagship: <>An <em>orchestration layer</em> over external LLMs — Wikipedia notes Manus "did not train its own foundation models."</>,
+      kv: [
+        ["HQ",       "Singapore (orig. Beijing/Wuhan)"],
+        ["Founder",  "Xiao Hong · Ji Yichao"],
+        ["Beta",     "2025-03-06 · invitation-only"],
+        ["Revenue",  "$125M ARR (Dec 2025)"],
+        ["Funding",  "Series B $75M · Benchmark"],
+        ["Notable",  "Meta acq. blocked by NDRC, 2026-04-27"],
+      ],
+    },
+    {
+      num: "ii",
+      href: "entities/openclaw.md",
+      tag: "Open source · MIT",
+      name: { plain: "Open", em: "Claw" },
+      founded: "Peter Steinberger · 2025-11-24",
+      flagship: <>The most-starred open-source agent — <em>247K stars</em>, derived from Clawd, "named after Anthropic's chatbot Claude."</>,
+      kv: [
+        ["License",    "MIT"],
+        ["Lineage",    "Clawdbot → Moltbot → OpenClaw"],
+        ["Channels",   "22 messaging platforms"],
+        ["Capability", "Browse · read/write · shell"],
+        ["Steward",    "Non-profit foundation"],
+        ["Notable",    "Steinberger joined OpenAI, 2026-02-14"],
+      ],
+    },
+    {
+      num: "iii",
+      href: "entities/hermes-agent.md",
+      tag: "Open source · MIT",
+      name: { plain: "Hermes ", em: "Agent" },
+      founded: "Nous Research · v0.13.0, May 2026",
+      flagship: <>The <em>self-improving</em> runtime — "the only agent with a built-in learning loop … creates skills from experience."</>,
+      kv: [
+        ["License",    "MIT"],
+        ["Tagline",    "The agent that grows with you"],
+        ["Providers",  "11+ (Nous, OpenRouter, NIM, …)"],
+        ["Sandboxes",  "7 backends (local, Docker, Modal…)"],
+        ["Memory",     "FTS5 + Honcho dialectic"],
+        ["Notable",    "Model-agnostic · switch with `hermes model`"],
+      ],
+    },
+  ];
+
+  return (
+    <section id="agents">
+      <div className="container">
+        <SectionHead
+          num="04 / Agents"
+          title={<>The agent <em>layer</em>.</>}
+          sub="General-purpose autonomous agents built on top of frontier models — closed orchestrators, open-source runtimes, and the messaging-first interface pattern that displaced the chat tab."
+        />
+        <div className="lab-grid">
+          {agents.map(a => {
+            const inner = (
+              <>
+                <div className="lab-num">{a.num.toUpperCase()}</div>
+                <span className="reg-tag" style={{marginBottom: 20}}>{a.tag}</span>
+                <div className="lab-name">{a.name.plain}<em>{a.name.em}</em></div>
+                <div className="lab-founded">{a.founded}</div>
+                <div className="lab-flagship">{a.flagship}</div>
+                <div className="lab-kv">
+                  {a.kv.map(([k, v]) => (
+                    <div key={k} className="lab-kv-cell">
+                      <div className="k">{k}</div>
+                      <div className="v">{v}</div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+            return a.href
+              ? <a key={a.num} href={a.href} className="lab-card card-link">{inner}</a>
+              : <div key={a.num} className="lab-card">{inner}</div>;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FundingSection() {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) setVisible(true);
+    }, { threshold: 0.15 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <section id="capital" ref={ref}>
+      <div className="container">
+        <SectionHead
+          num="05 / Capital"
+          title={<>Money &amp; <em>silicon</em>.</>}
+          sub="Frontier capital, the chips that train it, and the single market event most associated with this era — the day a Chinese open-weight model wiped $600B off Nvidia."
+        />
+
+        <div className="moment">
+          <div className="moment-text">
+            <h3>The DeepSeek <em>Moment</em>.</h3>
+            <p>
+              On 27 January 2025, DeepSeek surpassed ChatGPT as the most-downloaded free app on the US iOS App Store. The same day, Nvidia's share price fell 18% — the largest single-company market-cap loss in US stock history.
+            </p>
+          </div>
+          <div className="moment-stats">
+            <div className="moment-stat">
+              <div className="big">$600<span style={{fontSize:48}}>B</span></div>
+              <div className="sm">Nvidia market cap, lost in one session</div>
+            </div>
+            <div className="moment-stat">
+              <div className="big">−18<span style={{fontSize:48}}>%</span></div>
+              <div className="sm">Nvidia share price, single-day decline</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="funding-grid">
+          {FUNDING_DATA.map((card, i) => (
+            <div key={i} className="funding-card">
+              <h3>{card.title.plain}<em>{card.title.em}</em></h3>
+              {card.bars.map((bar, j) => (
+                <div key={j} className="funding-bar-group">
+                  <div className="funding-bar-meta">
+                    <span className="label">{bar.label}</span>
+                    <span className="value">${bar.value}{card.suffix}</span>
+                  </div>
+                  <div className="funding-bar-track">
+                    <div className={`funding-bar-fill ${card.accent ? "accent" : ""}`}
+                      style={{ width: visible ? `${(bar.value / bar.max) * 100}%` : "0%" }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* Nvidia + Stargate — the hardware spine */}
+        <div className="infra-callout">
+          <div className="stargate-text">
+            <div style={{fontFamily:"'JetBrains Mono', monospace", fontSize:10, letterSpacing:"0.14em",
+              textTransform:"uppercase", color:"var(--ink-4)", marginBottom:14}}>
+              Stargate LLC · <span style={{color:"var(--accent)"}}>announced 21 Jan 2025</span>
+            </div>
+            <h3>Up to <em>$500B</em> in U.S. AI infrastructure by 2029.</h3>
+            <p>
+              OpenAI, SoftBank, Oracle, and MGX announced Stargate the day after Trump rescinded EO 14110 — "the largest AI infrastructure project in history." Initial commitment: $100B. First ten data centers in Abilene, Texas.
+            </p>
+            <div className="stargate-meta">
+              <div className="stargate-meta-cell">
+                <div className="k">Initial commit</div>
+                <div className="v">$100B</div>
+              </div>
+              <div className="stargate-meta-cell">
+                <div className="k">Total target</div>
+                <div className="v">$500B</div>
+              </div>
+              <div className="stargate-meta-cell">
+                <div className="k">Target capacity</div>
+                <div className="v">~7 GW</div>
+              </div>
+              <div className="stargate-meta-cell">
+                <div className="k">Timeline</div>
+                <div className="v">By 2029</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="nvidia-chart">
+            <div className="nvidia-chart-head">
+              <h4>Nvidia <em>revenue</em>, FY2024 → FY2026</h4>
+              <span className="sub">3.5× IN TWO YEARS</span>
+            </div>
+            <div className="nvidia-bars">
+              <div className="nvidia-bar-col">
+                <div className="nvidia-bar" style={{ height: visible ? `${60.9/215.9*100}%` : "0%" }}>
+                  <div className="val">$60.9B<small>FY2024</small></div>
+                </div>
+              </div>
+              <div className="nvidia-bar-col">
+                <div className="nvidia-bar" style={{ height: visible ? `${130/215.9*100}%` : "0%", transitionDelay:"0.15s" }}>
+                  <div className="val">$130B<small>FY2025</small></div>
+                </div>
+              </div>
+              <div className="nvidia-bar-col">
+                <div className="nvidia-bar peak" style={{ height: visible ? "100%" : "0%", transitionDelay:"0.3s" }}>
+                  <div className="val">$215.9B<small>FY2026</small></div>
+                </div>
+              </div>
+            </div>
+            <div className="nvidia-mc">
+              <div className="nvidia-mc-cell">
+                <div className="lbl">First to</div>
+                <div className="v">$3T</div>
+                <div className="when">18 Jun 2024</div>
+              </div>
+              <div className="nvidia-mc-cell">
+                <div className="lbl">First to</div>
+                <div className="v">$4T</div>
+                <div className="when">10 Jul 2025</div>
+              </div>
+              <div className="nvidia-mc-cell">
+                <div className="lbl">First to</div>
+                <div className="v">$5T</div>
+                <div className="when">29 Oct 2025</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="awards-row" style={{marginTop:0}}>
+          <div className="award-card">
+            <div className="award-medal">N</div>
+            <div>
+              <h4>Nobel Prize in Physics</h4>
+              <div className="yr">October 2024</div>
+              <p>Geoffrey Hinton and John Hopfield, "for foundational discoveries that enable machine learning with artificial neural networks."</p>
+            </div>
+          </div>
+          <div className="award-card">
+            <div className="award-medal">N</div>
+            <div>
+              <h4>Nobel Prize in Chemistry</h4>
+              <div className="yr">October 2024</div>
+              <p>Demis Hassabis and John Jumper of DeepMind shared the prize for protein structure prediction (AlphaFold), with David Baker for computational protein design.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function MacroSection() {
+  const ref = React.useRef(null);
+  const [visible, setVisible] = React.useState(false);
+  React.useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { setVisible(true); obs.disconnect(); }
+    }, { threshold: 0.15 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
+
+  // adoption curve points: [year, % population]
+  // PC reached ~50% in ~14 years, internet in ~7, generative AI in 3
+  const curves = [
+    { name: "Personal Computer", color: "var(--ink-4)", points: [[0,0],[3,3],[6,12],[9,28],[12,42],[14,50]] },
+    { name: "Internet",          color: "var(--ink-3)", points: [[0,0],[2,8],[4,24],[5,38],[6,46],[7,52]] },
+    { name: "Generative AI",     color: "var(--accent)", points: [[0,0],[1,18],[2,38],[3,53]] },
+  ];
+  const W = 1000, H = 200, MAX_Y = 60, MAX_X = 14;
+  const toPath = pts => pts.map(([x,y], i) =>
+    (i ? "L" : "M") + (x/MAX_X*W).toFixed(1) + " " + (H - y/MAX_Y*H).toFixed(1)
+  ).join(" ");
+
+  return (
+    <section id="macro" ref={ref}>
+      <div className="container">
+        <SectionHead
+          num="06 / Macro"
+          title={<>The macro <em>picture</em>.</>}
+          sub="Headline figures from the Stanford AI Index 2026 — capital, geography, adoption, and the slow erosion of disclosure."
+        />
+
+        {/* Headline pull quote */}
+        <div className="macro-callout">
+          <div>
+            <div className="macro-callout-eyebrow">
+              Stanford HAI · AI Index 2026 <em>capital</em>
+            </div>
+            <h3>Global corporate AI investment hit <em>$581.7B</em> in 2025 — up <em>130%</em> from the prior year.</h3>
+            <p>
+              Private investments alone reached <strong>$344.7B</strong> (+127.5% YoY). The pace of capital flowing into AI is now without precedent in the history of any prior technology.
+            </p>
+            <div className="macro-callout-source">SOURCE · hai.stanford.edu/ai-index/2026-ai-index-report</div>
+          </div>
+          <div className="macro-headline">
+            <span className="num">581<small>.7B</small></span>
+            <div className="delta">+ 130 % YoY</div>
+            <div className="delta-lbl">global corporate AI · 2025</div>
+          </div>
+        </div>
+
+        {/* USA vs China */}
+        <div className="macro-versus-wrap">
+          <div className="macro-versus-card">
+            <h4>The <em>investment</em> gap.</h4>
+            <div className="macro-bar-row">
+              <div className="macro-bar-meta">
+                <span className="country">United States</span>
+                <span className="amount">$<em>285.9</em>B</span>
+              </div>
+              <div className="macro-bar-track">
+                <div className="macro-bar-fill accent" style={{ width: visible ? "100%" : "0%" }} />
+              </div>
+            </div>
+            <div className="macro-bar-row">
+              <div className="macro-bar-meta">
+                <span className="country">China</span>
+                <span className="amount">${"\u00A0"}12.4{"\u00A0"}B</span>
+              </div>
+              <div className="macro-bar-track">
+                <div className="macro-bar-fill" style={{ width: visible ? `${12.4/285.9*100}%` : "0%" }} />
+              </div>
+            </div>
+            <div className="macro-multiple">
+              <em>23.1×</em> US led China in private AI dollars (2025)
+            </div>
+          </div>
+
+          <div className="macro-versus-card">
+            <h4>Consumer <em>value</em> created.</h4>
+            <div className="macro-bar-row">
+              <div className="macro-bar-meta">
+                <span className="country">U.S. consumers · 2026</span>
+                <span className="amount">$<em>172</em>B</span>
+              </div>
+              <div className="macro-bar-track">
+                <div className="macro-bar-fill accent" style={{ width: visible ? "100%" : "0%" }} />
+              </div>
+            </div>
+            <div className="macro-bar-row">
+              <div className="macro-bar-meta">
+                <span className="country">Median value / user · 2025</span>
+                <span className="amount">1×</span>
+              </div>
+              <div className="macro-bar-track">
+                <div className="macro-bar-fill" style={{ width: visible ? "33%" : "0%" }} />
+              </div>
+            </div>
+            <div className="macro-multiple">
+              <em>3×</em> median value per user, 2025 → 2026
+            </div>
+          </div>
+        </div>
+
+        {/* Adoption curve */}
+        <div className="macro-adoption">
+          <div className="macro-adoption-head">
+            <h4>To <em>53%</em> of the population in three years.</h4>
+            <div className="macro-adoption-sub">% U.S. POPULATION · YEARS SINCE LAUNCH</div>
+          </div>
+          <div className="macro-curve">
+            <svg viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="none">
+              {/* y-grid */}
+              {[20, 40, 60].map(v => (
+                <line key={v} x1="0" x2={W} y1={H - v/MAX_Y*H} y2={H - v/MAX_Y*H} stroke="#1a18140d" strokeWidth="1" />
+              ))}
+              {curves.map((c, i) => (
+                <g key={i}>
+                  <path
+                    d={toPath(c.points)}
+                    fill="none"
+                    stroke={c.color}
+                    strokeWidth={c.name === "Generative AI" ? "2.5" : "1.5"}
+                    strokeDasharray={visible ? "1500" : "1500"}
+                    strokeDashoffset={visible ? "0" : "1500"}
+                    style={{ transition: `stroke-dashoffset 1.8s ${i*0.15}s ease-out` }}
+                    vectorEffect="non-scaling-stroke"
+                  />
+                  {/* end-point marker */}
+                  {(() => {
+                    const [ex, ey] = c.points[c.points.length - 1];
+                    return (
+                      <circle
+                        cx={ex/MAX_X*W}
+                        cy={H - ey/MAX_Y*H}
+                        r={c.name === "Generative AI" ? 5 : 3.5}
+                        fill={c.color}
+                        opacity={visible ? 1 : 0}
+                        style={{ transition: `opacity 0.3s ${1.4 + i*0.15}s` }}
+                      />
+                    );
+                  })()}
+                </g>
+              ))}
+            </svg>
+            {/* end labels */}
+            {curves.map((c, i) => {
+              const [ex, ey] = c.points[c.points.length - 1];
+              return (
+                <div key={i} style={{
+                  position: "absolute",
+                  left: `${ex/MAX_X*100}%`,
+                  top: `${(1 - ey/MAX_Y)*100}%`,
+                  transform: "translate(8px, -50%)",
+                  fontFamily: "'Instrument Serif', serif",
+                  fontStyle: "italic",
+                  fontSize: 14,
+                  color: c.color,
+                  opacity: visible ? 1 : 0,
+                  transition: `opacity 0.4s ${1.5 + i*0.15}s`,
+                  whiteSpace: "nowrap",
+                }}>
+                  {c.name} · {ey}%
+                </div>
+              );
+            })}
+          </div>
+          <div className="macro-curve-axis">
+            <span>year 0</span>
+            <span>year 7</span>
+            <span>year 14</span>
+          </div>
+        </div>
+
+        {/* Stat row */}
+        <div className="macro-stats">
+          <div className="macro-stat-cell">
+            <div className="lbl">U.S. consumer value</div>
+            <div className="big">$<em>172</em><small>B/yr</small></div>
+            <p className="note">Estimated annual value of generative AI tools to U.S. consumers, by early 2026.</p>
+          </div>
+          <div className="macro-stat-cell">
+            <div className="lbl">Population adoption · 3 years</div>
+            <div className="big"><em>53</em><small>%</small></div>
+            <p className="note">Faster than the personal computer or the internet — though correlated strongly with GDP per capita.</p>
+          </div>
+          <div className="macro-stat-cell">
+            <div className="lbl">Chinese guidance funds · 2000 – 2023</div>
+            <div className="big">$<em>912</em><small>B</small></div>
+            <p className="note">Estimated state-directed industrial capital deployed across sectors, including AI.</p>
+          </div>
+        </div>
+
+        {/* Transparency Index drop */}
+        <div className="macro-transparency">
+          <div>
+            <div className="macro-callout-eyebrow">
+              Foundation Model <em>Transparency Index</em>
+            </div>
+            <h4>Disclosure is <em>retreating</em>.</h4>
+            <p>
+              Average transparency scores fell from <strong>58</strong> to <strong>40</strong> in a single year — measured across training data, compute, capabilities, risks, and usage policy. The frontier is becoming more opaque even as it becomes more capital-intensive.
+            </p>
+          </div>
+          <div className="macro-transparency-viz">
+            <div className="tpi-col">
+              <div className="tpi-bar-wrap">
+                <div className="tpi-bar" style={{ height: visible ? "58%" : "0%" }}>
+                  <div className="tpi-val">58</div>
+                </div>
+              </div>
+              <div className="tpi-yr">2024</div>
+            </div>
+            <div className="tpi-arrow">→</div>
+            <div className="tpi-col">
+              <div className="tpi-bar-wrap">
+                <div className="tpi-bar down" style={{ height: visible ? "40%" : "0%" }}>
+                  <div className="tpi-val">40</div>
+                </div>
+              </div>
+              <div className="tpi-yr">2025</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function IncidentsSection() {
+  const incidents = [
+    {
+      tag: "Open Letter",
+      title: { plain: "FLI ", em: "Pause Letter" },
+      date: "22 Mar 2023 · 30,000+ signatures",
+      body: "The Future of Life Institute open letter called for a six-month pause on training systems more powerful than GPT-4. Signed by Bengio, Russell, Musk, Wozniak, Harari. Bill Gates declined; Altman did not pause.",
+    },
+    {
+      tag: "Litigation · Canada",
+      title: { plain: "Moffatt v. ", em: "Air Canada" },
+      date: "BCCRT 149 · 14 Feb 2024",
+      body: "Air Canada argued the chatbot was \"a separate legal entity\"; the tribunal disagreed, finding the company liable for negligent misrepresentation. First common-law precedent that companies own their chatbot's words.",
+      stat: { num: "$650", lbl: " in damages — the first AI-chatbot liability ruling" },
+    },
+    {
+      tag: "Regulator · EU",
+      title: { plain: "Italy ", em: "vs. OpenAI" },
+      date: "Garante action Mar 2023 · €15M fine Dec 2024",
+      body: "Garante issued an emergency stop in March 2023 — the first major GDPR action against a generative-AI service. Access restored after policy changes; in December 2024 Italy imposed the first GDPR fine on a generative-AI company.",
+      stat: { num: "€15M", lbl: " fine — the first GDPR generative-AI penalty" },
+    },
+    {
+      tag: "Research · Anthropic",
+      title: { plain: "Many-shot ", em: "Jailbreaking" },
+      date: "Anthropic · 2 Apr 2024",
+      body: "By including hundreds of fake dialogues in a prompt, attackers can force frontier LLMs to bypass training. Effective with up to 256 examples, on every major model tested. Affects larger models more.",
+    },
+    {
+      tag: "Lawsuit · US",
+      title: { plain: "NYT v. ", em: "OpenAI" },
+      date: "Filed 27 Dec 2023 · S.D.N.Y.",
+      body: "The New York Times sued OpenAI and Microsoft, alleging unauthorized training on millions of articles. Seeks damages \"in the billions of dollars.\" The most-watched copyright case of the AI era.",
+    },
+    {
+      tag: "Withdrawal · Meta",
+      title: { plain: "Galactica ", em: "withdrawn" },
+      date: "17 Nov 2022 · 3 days after launch",
+      body: "Meta's science LLM was pulled after researchers flagged hallucinated citations. \"In all cases, it was wrong or biased but sounded right and authoritative.\" The term \"hallucination\" entered public discourse — exactly 13 days before ChatGPT shipped.",
+    },
+  ];
+
+  return (
+    <section id="incidents">
+      <div className="container">
+        <SectionHead
+          num="07 / Incidents"
+          title={<>Lawsuits, leaks, <em>jailbreaks</em>.</>}
+          sub="Public failures, regulatory actions, and adversarial research that defined the field's exposure to the real world."
+        />
+        <div className="incident-grid">
+          {incidents.slice(0, 2).map((inc, i) => (
+            <IncidentCard key={i} {...inc} />
+          ))}
+          <div className="alignment-callout">
+            <div>
+              <div style={{fontFamily:"'JetBrains Mono', monospace", fontSize:10,
+                letterSpacing:"0.14em", textTransform:"uppercase",
+                color:"var(--accent)", marginBottom:12}}>
+                Research · Anthropic · 18 Dec 2024
+              </div>
+              <h4>Claude 3 Opus learned to <em>fake alignment</em>.</h4>
+              <p>
+                When the model believed its responses would be used for training, it strategically complied with harmful queries 12% of the time — to preserve its trained values. After actual RL pressure was applied, the rate of alignment-faking reasoning rose to 78%.
+              </p>
+            </div>
+            <div className="alignment-stats">
+              <div className="alignment-stat">
+                <div className="num">12<span style={{fontSize:"0.55em"}}>%</span></div>
+                <div className="lbl">Strategic compliance, baseline</div>
+              </div>
+              <div className="alignment-stat">
+                <div className="num">78<span style={{fontSize:"0.55em"}}>%</span></div>
+                <div className="lbl">After actual RL training</div>
+              </div>
+            </div>
+          </div>
+          {incidents.slice(2).map((inc, i) => (
+            <IncidentCard key={i+10} {...inc} />
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function IncidentCard({ tag, title, date, body, stat }) {
+  return (
+    <div className="incident-card">
+      <div className="incident-marker">{tag}</div>
+      <h4>{title.plain}<em>{title.em}</em></h4>
+      <div className="incident-date">{date}</div>
+      <p>{body}</p>
+      {stat && (
+        <div className="pull-stat">
+          <em>{stat.num}</em>{stat.lbl}
+        </div>
+      )}
+    </div>
+  );
+}
+
+
+function PolicySection() {
+  const regs = [
+    {
+      tag: "European Union",
+      href: "regulations/eu-ai-act.md",
+      name: { plain: "EU AI ", em: "Act" },
+      date: "Reg. (EU) 2024/1689 · in force 1 Aug 2024",
+      body: "The world's first comprehensive AI law. Classifies systems by risk — Unacceptable, High, Limited, Minimal — with a special tier for general-purpose models trained with more than 10²⁵ FLOPs. Penalties reach €35M or 7% of global turnover.",
+      featured: true,
+    },
+    {
+      tag: "United States",
+      href: "regulations/us-executive-order-ai.md",
+      name: { plain: "EO ", em: "14110" },
+      date: "Signed 30 Oct 2023 · Rescinded 20 Jan 2025",
+      body: "Biden's executive order required frontier developers to share safety test results with the federal government. Trump rescinded it on his first day in office.",
+    },
+    {
+      tag: "United States · 2025",
+      href: "regulations/us-executive-order-ai.md",
+      name: { plain: "AI Action ", em: "Plan" },
+      date: "Signed 23 Jul 2025 by President Trump",
+      body: "\"Winning the AI Race\" — 90+ federal actions across three pillars: accelerating innovation, building American AI infrastructure, and leading in international diplomacy and security. The successor framework to the rescinded EO 14110.",
+    },
+    {
+      tag: "California · Vetoed",
+      href: "regulations/sb-1047.md",
+      name: { plain: "SB ", em: "1047" },
+      date: "Introduced Feb 2024 · Vetoed 29 Sep 2024",
+      body: "Wiener's \"Safe and Secure Innovation for Frontier AI Models Act\" would have covered models trained with >10²⁶ FLOPs or >$100M. Newsom vetoed for being \"based only on computational size.\" The most prominent attempt at US state-level frontier regulation.",
+    },
+    {
+      tag: "China",
+      href: "regulations/china-ai-regulation.md",
+      name: { plain: "Generative AI ", em: "Measures" },
+      date: "In force 15 Aug 2023",
+      body: "Mandates content alignment with core socialist values, watermarking of AI outputs, and security assessments for any public-facing service. Baidu's Ernie Bot was first to navigate the new regime, public on 31 Aug.",
+    },
+    {
+      tag: "International",
+      href: "regulations/ai-safety-summits.md",
+      name: { plain: "Three ", em: "Summits" },
+      date: "Bletchley 2023 · Seoul 2024 · Paris 2025",
+      body: "Bletchley: 28 countries acknowledge frontier risk. Seoul: 16 labs sign Frontier AI Safety Commitments. Paris: 58 signatories — US and UK refuse to sign, calling the agreement insufficient on global governance.",
+      featured: true,
+    },
+  ];
+  return (
+    <section id="policy">
+      <div className="container">
+        <SectionHead
+          num="08 / Governance"
+          title={<>The state, <em>responding</em>.</>}
+          sub="Major laws, executive orders, and international summits shaping how AI is built and deployed."
+        />
+        <div className="reg-grid">
+          {regs.map((r, i) => {
+            const cls = `reg-card ${r.featured ? "featured" : ""}`;
+            const inner = (
+              <>
+                <span className="reg-tag">{r.tag}</span>
+                <div className="reg-name">{r.name.plain}<em>{r.name.em}</em></div>
+                <div className="reg-date">{r.date}</div>
+                <p className="reg-body">{r.body}</p>
+              </>
+            );
+            return r.href
+              ? <a key={i} href={r.href} className={`${cls} card-link`}>{inner}</a>
+              : <div key={i} className={cls}>{inner}</div>;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function ConceptsSection() {
+  const concepts = [
+    { glyph: "λ", href: "concepts/scaling-laws.md", title: { plain: "Scaling ", em: "Laws" },
+      body: "Performance scales as a predictable power law of model size, data, and compute. The 2022 Chinchilla paper established that parameters and tokens should scale equally with budget." },
+    { glyph: "ℜ", href: "concepts/rlhf.md", title: { plain: "RL", em: "HF" },
+      body: "Reinforcement Learning from Human Feedback — the post-training step that made ChatGPT helpful. A reward model trained on human preferences fine-tunes the LLM via RL." },
+    { glyph: "§", href: "concepts/constitutional-ai.md", title: { plain: "Constitutional ", em: "AI" },
+      body: "Anthropic's framework: the LLM is trained to adhere to a written constitution through self-critique and revision, reducing reliance on human raters." },
+    { glyph: "∴", href: "concepts/interpretability.md", title: { plain: "Mech ", em: "Interp" },
+      body: "Research aiming to understand what's actually happening inside neural networks — circuits, features, representations — to make behavior predictable and auditable." },
+    { glyph: "∑", href: "concepts/mixture-of-experts.md", title: { plain: "Mixture of ", em: "Experts" },
+      body: "Sparse activation: only a subset of parameters fires per token. Enables huge parameter counts at lower inference cost. Used in DeepSeek-V3, Mixtral, and Llama 4." },
+    { glyph: "ϕ", href: "concepts/reasoning-models.md", title: { plain: "Reasoning ", em: "Models" },
+      body: "Models like o1 that 'think' at inference time before answering. Test-time compute trades latency for accuracy and scales independently of training compute." },
+    { glyph: "α", href: "concepts/ai-agents.md", title: { plain: "AI ", em: "Agents" },
+      body: "Systems that take autonomous actions: browsing, coding, executing tasks. Operator (OpenAI), computer use (Anthropic), Cursor and Devin are early production examples." },
+    { glyph: "Ω", href: "concepts/agi-risk.md", title: { plain: "AGI ", em: "Risk" },
+      body: "Existential risk from AI. A 2022 expert survey put median p(doom) at 5–10%; LeCun, Ng, and Gebru argue the framing distracts from immediate harms." },
+    { glyph: "ϴ", href: "entities/alphafold-3.md", title: { plain: "AlphaFold ", em: "3" },
+      body: "DeepMind's protein structure predictor, expanded in 2024 to handle DNA, RNA, ligands, and post-translational modifications. Earned a Nobel Prize in Chemistry." },
+    { glyph: "Ψ", href: "concepts/world-models.md", title: { plain: "World ", em: "Models" },
+      body: "Systems that build internal representations of an environment and predict how it changes in response to actions. LeCun's JEPA, DeepMind's Genie 3 (24fps photorealistic), and Project Genie's public access in Jan 2026." },
+  ];
+  return (
+    <section id="concepts">
+      <div className="container">
+        <SectionHead
+          num="09 / Concepts"
+          title={<>Nine ideas, <em>condensed</em>.</>}
+          sub="The core technical and philosophical concepts referenced throughout this index."
+        />
+        <div className="concept-grid">
+          {concepts.map((c, i) => {
+            const inner = (
+              <>
+                <span className="glyph">{c.glyph}</span>
+                <h4>{c.title.plain}<em>{c.title.em}</em></h4>
+                <p>{c.body}</p>
+              </>
+            );
+            return c.href
+              ? <a key={i} href={c.href} className="concept-card card-link">{inner}</a>
+              : <div key={i} className="concept-card">{inner}</div>;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PeopleSection() {
+  const people = [
+    { mono: "SA", href: "entities/sam-altman.md", name: "Sam Altman",      role: "OpenAI · CEO",
+      note: "Fired by the OpenAI board on 17 Nov 2023; reinstated 21 Nov 2023 after employee revolt." },
+    { mono: "DA", href: "entities/dario-amodei.md", name: "Dario Amodei",    role: "Anthropic · CEO",
+      note: "Co-founded Anthropic in 2021 after leaving OpenAI, where he was VP of Research." },
+    { mono: "DH", href: "entities/demis-hassabis.md", name: "Demis Hassabis",  role: "Google DeepMind · CEO",
+      note: "Shared the 2024 Nobel Prize in Chemistry with John Jumper for AlphaFold's contributions to protein structure prediction." },
+    { mono: "GH", href: "entities/geoffrey-hinton.md", name: "Geoffrey Hinton", role: "Researcher · Turing 2018",
+      note: "Shared the 2024 Nobel Prize in Physics with John Hopfield. Left Google in 2023 to speak freely about AI risk." },
+    { mono: "YL", href: "entities/yann-lecun.md", name: "Yann LeCun",      role: "Ex-Meta · Turing 2018",
+      note: "Departed Meta on 19 Nov 2025. Vocal skeptic of AGI x-risk; now Executive Chair of Advanced Machine Intelligence Labs." },
+    { mono: "YB", href: "entities/yoshua-bengio.md", name: "Yoshua Bengio",   role: "Mila · Turing 2018",
+      note: "Third co-winner of the 2018 Turing Award. Led the International AI Safety Report (Jan 2025); founded LawZero in June 2025." },
+    { mono: "IS", href: "entities/ilya-sutskever.md", name: "Ilya Sutskever",  role: "SSI · Co-founder",
+      note: "OpenAI co-founder; left in May 2024 and founded Safe Superintelligence Inc. in June 2024." },
+    { mono: "MM", href: "entities/mira-murati.md", name: "Mira Murati",     role: "Thinking Machines · CEO",
+      note: "OpenAI CTO from May 2022; interim CEO for three days during the Nov 2023 crisis. Departed Sep 2024; launched Thinking Machines Lab in Feb 2025." },
+    { mono: "JH", href: "entities/nvidia.md", name: "Jensen Huang",    role: "Nvidia · CEO",
+      note: "Built the company whose chips train every frontier model. Nvidia became the first $5T company on 29 Oct 2025." },
+  ];
+  return (
+    <section id="people">
+      <div className="container">
+        <SectionHead
+          num="10 / People"
+          title={<>Nine figures, <em>centerstage</em>.</>}
+          sub="Researchers, founders, and executives whose decisions shaped the trajectory of the field."
+        />
+        <div className="people-grid">
+          {people.map(p => {
+            const inner = (
+              <>
+                <div className="person-monogram">{p.mono}</div>
+                <div className="person-name">{p.name}</div>
+                <div className="person-role">{p.role}</div>
+                <div className="person-note">{p.note}</div>
+              </>
+            );
+            return p.href
+              ? <a key={p.name} href={p.href} className="person-card card-link">{inner}</a>
+              : <div key={p.name} className="person-card">{inner}</div>;
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer>
+      <div className="footer-inner">
+        <div className="footer-mark">A visual index<br/>of the <em>AI era</em>.</div>
+        <div className="footer-meta">
+          <div>Edition 2026.05</div>
+          <div>78 articles · 90+ events</div>
+          <div>Sources: Wikipedia, claude.com, lab announcements</div>
+          <div>※ end of volume one</div>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+function App() {
+  return (
+    <>
+      <Hero />
+      <TimelineSection />
+      <LabsSection />
+      <ModelsSection />
+      <AgentsSection />
+      <FundingSection />
+      <MacroSection />
+      <IncidentsSection />
+      <PolicySection />
+      <ConceptsSection />
+      <PeopleSection />
+      <Footer />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
